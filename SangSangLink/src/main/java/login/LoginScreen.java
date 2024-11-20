@@ -1,4 +1,4 @@
-//JavaChatClientMain.java
+package client;//example.JavaChatClientMain.java
 //Java Client 시작import java.awt.BorderLayout;
 
 import javax.swing.*;
