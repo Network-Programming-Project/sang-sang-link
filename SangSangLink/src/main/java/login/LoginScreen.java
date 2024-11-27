@@ -1,5 +1,7 @@
-package client;//example.JavaChatClientMain.java
+package login;//example.JavaChatClientMain.java
 //Java Client 시작import java.awt.BorderLayout;
+
+import chat.ChatScreen;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -7,7 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class JavaChatClientMain extends JFrame {
+public class LoginScreen extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField txtUserName;
@@ -21,7 +23,7 @@ public class JavaChatClientMain extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					JavaChatClientMain frame = new JavaChatClientMain();
+					LoginScreen frame = new LoginScreen();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -33,7 +35,7 @@ public class JavaChatClientMain extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public JavaChatClientMain() {
+	public LoginScreen() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 254, 321);
 		contentPane = new JPanel();
@@ -67,7 +69,7 @@ public class JavaChatClientMain extends JFrame {
 		contentPane.add(lblPortNumber);
 		
 		txtPortNumber = new JTextField();
-		txtPortNumber.setText("30000");
+		txtPortNumber.setText("50000");
 		txtPortNumber.setHorizontalAlignment(SwingConstants.CENTER);
 		txtPortNumber.setColumns(10);
 		txtPortNumber.setBounds(101, 163, 116, 33);
@@ -90,7 +92,7 @@ public class JavaChatClientMain extends JFrame {
 			String username = txtUserName.getText().trim();
 			String ip_addr = txtIpAddress.getText().trim();
 			String port_no = txtPortNumber.getText().trim();
-			JavaChatClientView view = new JavaChatClientView(username, ip_addr, port_no);
+			ChatScreen view = new ChatScreen(username, ip_addr, port_no);
 			setVisible(false);
 		}
 	}
