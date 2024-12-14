@@ -13,7 +13,7 @@ public class ServerManager {
     static int clientCount = 0;            // 접속한 클라이언트 유저 번호 저장, 0번 사용자부터 시작
 
     public static void main(String[] args) throws IOException {
-        ServerSocket ssocket = new ServerSocket(50000);     // 1. 서버 소켓 생성
+        ServerSocket ssocket = new ServerSocket(50001);     // 1. 서버 소켓 생성
 
         Socket s;
 
