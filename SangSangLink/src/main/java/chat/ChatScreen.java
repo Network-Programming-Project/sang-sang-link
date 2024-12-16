@@ -22,7 +22,7 @@ public class ChatScreen extends JPanel {
     private DataInputStream dis;
     private DataOutputStream dos;
 
-    public ChatScreen(User user) {
+    public ChatScreen() {
 
         this.userName = userName;
         this.ipAddr = ipAddr;
@@ -91,17 +91,6 @@ public class ChatScreen extends JPanel {
             ListenNetwork net = new ListenNetwork();
             net.start();
 
-            btnSend.addActionListener(e -> {
-                String msg = "[" + userName + "] " + txtInput.getText();
-                sendMessage(msg);
-                txtInput.setText("");
-            });
-
-            txtInput.addActionListener(e -> {
-                String msg = "[" + userName + "] " + txtInput.getText();
-                sendMessage(msg);
-                txtInput.setText("");
-            });
         } catch (IOException e) {
             appendText("Error connecting to server\n");
         }

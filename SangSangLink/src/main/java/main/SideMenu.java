@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 public class SideMenu extends JPanel {
     private JLabel lblProfile;
     private JLabel lblChat;
+    private JLabel lblChatAdd;
 
     public SideMenu(){
         initialization();
@@ -30,6 +31,13 @@ public class SideMenu extends JPanel {
         lblChat.setHorizontalAlignment(SwingConstants.CENTER);
         lblChat.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         add(lblChat);
+
+        // 채팅 추가 아이콘
+        // TODO 아이콘 수정 및 메뉴 배치 수정 필요
+        lblChatAdd = new JLabel(new ImageIcon(getClass().getResource("/static/images/chat.jpeg")));
+        lblChatAdd.setHorizontalAlignment(SwingConstants.CENTER);
+        lblChatAdd.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        add(lblChatAdd);
     }
 
     // 프로필 클릭 리스너 설정
@@ -45,6 +53,16 @@ public class SideMenu extends JPanel {
     // 채팅 클릭 리스너 설정
     public void setChatClickListener(Consumer<MouseEvent> onClick) {
         lblChat.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                onClick.accept(e);
+            }
+        });
+    }
+
+    // 채팅 추가 리스너 설정
+    public void setChatAddClickListener(Consumer<MouseEvent> onClick) {
+        lblChatAdd.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 onClick.accept(e);

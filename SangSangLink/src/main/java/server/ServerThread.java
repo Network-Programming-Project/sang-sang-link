@@ -28,7 +28,7 @@ class ServerThread extends Thread {
         String message;
         while (true) {
             try {
-                message = is.readUTF();        // 어떤 클라이언트로 부터 들어오는 데이터를 읽어들여서
+                message = is.readUTF();        // 어떤 클라이언트로  부터 들어오는 데이터를 읽어들여서
                 System.out.println(message);   // (일단 서버의 콘솔장에 출력해서 확인하고)
                 for (ServerThread t : ServerManager.list) {        // ArrayList에 등록되어 있는 모든 사용자에게 순서대로 그 메시지 전달
                     t.os.writeUTF(this.name + " : " + message);   // t 사용자와 통신하는 스레드 안의 os.writeUTF()를 호출하여 메시지 전달

@@ -3,6 +3,7 @@ package login;
 import db.UserDB;
 import main.MainScreen;
 import model.User;
+import session.Session;
 
 import javax.sound.sampled.*;
 import javax.swing.*;
@@ -23,10 +24,9 @@ public class LoginScreen extends JFrame {
 	public static void main(String[] args) {
 		// 여러 개의 LoginScreen을 동시에 실행하기 위해 각각을 별도의 스레드로 실행
 		for (int i = 0; i < 2; i++) {  // 예시로 3번의 인스턴스를 실행
-			int instance = i;
 			SwingUtilities.invokeLater(() -> {
 				try {
-					LoginScreen frame = new LoginScreen(instance);
+					LoginScreen frame = new LoginScreen();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -35,7 +35,7 @@ public class LoginScreen extends JFrame {
 		}
 	}
 
-	public LoginScreen(int instance) {
+	public LoginScreen() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 300, 400);
 		contentPane = new JPanel();
@@ -65,8 +65,8 @@ public class LoginScreen extends JFrame {
 		lblEmailName.setBounds(110, 85, 120, 20); // 폭 늘림
 		contentPane.add(lblEmailName);
 
-		// User Name 입력
-		txtEmail = new JTextField();
+		// 사용자 이메일 입력
+		txtEmail = new JTextField("hansung.ac.kr");
 		txtEmail.setFont(new Font("Arial", Font.PLAIN, 14));
 		txtEmail.setBounds(90, 105, 120, 30);
 		contentPane.add(txtEmail);
@@ -78,7 +78,7 @@ public class LoginScreen extends JFrame {
 		contentPane.add(lblPassword);
 
 		// 비밀번호 입력
-		txtPassword = new JTextField("");
+		txtPassword = new JTextField("1234");
 		txtPassword.setFont(new Font("Arial", Font.PLAIN, 14));
 		txtPassword.setBounds(90, 175, 120, 30);
 		contentPane.add(txtPassword);
@@ -102,8 +102,9 @@ public class LoginScreen extends JFrame {
 			User user=UserDB.login(email, password);
 
 			if(user!=null){
-				// 입력된 정보를 ChatScreen에 전달
-				MainScreen mainScreen = new MainScreen(user);
+				// 세션 저장
+				Session.setUser(user);
+				MainScreen mainScreen = new MainScreen();
 				mainScreen.setVisible(true); // ChatScreen 보이기
 
 				setVisible(false); // LoginScreen 숨기기

@@ -1,5 +1,7 @@
 package main;
 
+import session.Session;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -7,7 +9,7 @@ public class ProfilePanel extends JPanel {
     private JLabel lblUserName;
     private JLabel lblConnectTime;
 
-    public ProfilePanel(String userName, String connectTime) {
+    public ProfilePanel(String connectTime) {
         setLayout(null);
 
         JLabel lblTitle = new JLabel("나의 프로필");
@@ -20,7 +22,7 @@ public class ProfilePanel extends JPanel {
         lblAvatar.setBounds(20, 50, 50, 50);
         add(lblAvatar);
 
-        lblUserName = new JLabel("사용자: " + userName);
+        lblUserName = new JLabel("사용자: " + Session.user.getUserName());
         lblUserName.setBounds(80, 60, 200, 30);
         add(lblUserName);
 

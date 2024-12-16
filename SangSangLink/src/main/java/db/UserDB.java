@@ -3,25 +3,54 @@ package db;
 import model.User;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+// 사용자 데이터베이스
 public class UserDB {
+    private static List<User> users = new ArrayList<User>();
+    private static Long autoIncrement = 0L;
 
-    static List<User> users = new ArrayList<User>();
-
+    // 초기 데이터
     static {
+        // 기본 데이터 2
+        User user2=User.builder()
+                .email("angry7319@naver.com")
+                .password("1234")
+                .port("5001")
+                .userName("jiwon")
+                .friends(new ArrayList<>())
+                .build()
+                ;
+
+        // 기본 데이터 3
+        User user3=User.builder()
+                .email("email@naver.com")
+                .password("1234")
+                .port("5001")
+                .userName("uwok")
+                .friends(new ArrayList<>())
+                .build()
+                ;
+
         // 기본 데이터
-        User user1=new User.UserBuilder()
+        User user1=User.builder()
                 .email("hansung.ac.kr")
                 .password("1234")
                 .port("5001")
                 .userName("bugi")
+                .friends(List.of(user2, user3))
                 .build()
                 ;
-        users.add(user1);
+
+        insert(user1);
+        insert(user2);
+        insert(user3);
     }
 
-    public static void addUser(User user) {
+    // 데이터베이스에 저장
+    public static void insert(User user) {
+        user.setId(autoIncrement++);
         users.add(user);
     }
 

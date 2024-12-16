@@ -1,61 +1,83 @@
 package main;
 
+import chat.ChatAddScreen;
+import chat.ChatListScreen;
 import chat.ChatScreen;
 import main.*;
 import model.User;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 
 public class MainScreen extends JFrame {
     private JPanel contentPane;
+    private SideMenu sideMenu;
+    private JPanel centerPanel; // 가운데 패널
     private ProfilePanel profilePanel;
+    private ChatListScreen chatListScreen;
+    private ChatAddScreen chatAddScreen;
     private ChatScreen chatScreen;
-    private JLabel lblUserName;
-    private JLabel lblConnectTime;
 
-    public MainScreen(User user) {
-        initialize(user);
+    public MainScreen() {
+        initialize();
     }
 
-    private void initialize(User user) {
-        // 기본 설정
+    private void initialize() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 400, 500);
-        contentPane = new JPanel();
+
+        contentPane = new JPanel(null); // null 레이아웃
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
-        contentPane.setLayout(null);
 
-        // 사이드 메뉴 추가
-        SideMenu sideMenu = new SideMenu();
+        // 사이드 메뉴
+        sideMenu = new SideMenu();
         sideMenu.setBounds(0, 0, 50, 500);
         contentPane.add(sideMenu);
 
-        // 프로필 패널 초기화
-        profilePanel = new ProfilePanel(user.getUserName(), getCurrentTime());
-        profilePanel.setBounds(60, 0, 320, 500);
+        // 가운데 패널
+        centerPanel = new JPanel(null);
+        centerPanel.setBounds(60, 0, 320, 500);
+        contentPane.add(centerPanel);
+
+        // 패널들 초기화
+        profilePanel = new ProfilePanel(getCurrentTime());
+        profilePanel.setBounds(0, 0, 320, 500);
         profilePanel.setVisible(true);
-        contentPane.add(profilePanel);
+        centerPanel.add(profilePanel);
 
-        // 채팅 화면 초기화
-        chatScreen = new ChatScreen(user);
-        chatScreen.setBounds(60, 0, 320, 500);
+        chatListScreen = new ChatListScreen();
+        chatListScreen.setBounds(0,0,320,500);
+        centerPanel.add(chatListScreen);
+        chatListScreen.setVisible(false);
+
+        chatAddScreen = new ChatAddScreen();
+        chatAddScreen.setBounds(0,0,320,500);
+        centerPanel.add(chatAddScreen);
+        chatAddScreen.setVisible(false);
+
+        // ChatScreen은 필요할 때 생성 또는 재사용 가능
+        chatScreen = new ChatScreen();
+        chatScreen.setBounds(0,0,320,500);
+        centerPanel.add(chatScreen);
         chatScreen.setVisible(false);
-        contentPane.add(chatScreen);
 
-        // 메뉴 클릭 이벤트 연결
+        // 이벤트 연결
         sideMenu.setProfileClickListener(e -> {
-            profilePanel.setVisible(true);
-            chatScreen.setVisible(false);
+            showPanel(profilePanel);
         });
 
         sideMenu.setChatClickListener(e -> {
-            profilePanel.setVisible(false);
-            chatScreen.setVisible(true);
+            showPanel(chatListScreen);
+        });
+
+        sideMenu.setChatAddClickListener(e->{
+            showPanel(chatAddScreen);
         });
     }
 
@@ -64,8 +86,23 @@ public class MainScreen extends JFrame {
         return formatter.format(new Date());
     }
 
-    public static void main(String[] args) {
+    // centerPanel 내 특정 패널만 표시하는 메서드
+    private void showPanel(JPanel panelToShow) {
+        for (Component comp : centerPanel.getComponents()) {
+            comp.setVisible(false);
+        }
+        panelToShow.setVisible(true);
+        centerPanel.revalidate();
+        centerPanel.repaint();
+    }
 
+    public void showChatScreen() {
+        // centerPanel 내 다른 패널 숨기고 chatScreen 보여주기
+        showPanel(chatScreen);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new MainScreen().setVisible(true));
     }
 }
 
