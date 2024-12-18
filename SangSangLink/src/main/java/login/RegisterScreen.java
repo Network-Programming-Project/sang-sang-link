@@ -12,7 +12,6 @@ public class RegisterScreen extends JFrame {
 
     private JTextField txtEmail;
     private JTextField txtPassword;
-    private JTextField txtPortNumber;
     private JTextField txtUserName;
 
     private JFrame loginScreen;
@@ -24,72 +23,71 @@ public class RegisterScreen extends JFrame {
         setBounds(100, 100, 300, 400);
         JPanel contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        contentPane.setBackground(new Color(255, 218, 185));
+        contentPane.setBackground(new Color(0, 155, 255));  // LoginScreen과 동일한 배경 색상
         setContentPane(contentPane);
         contentPane.setLayout(null);
 
         JLabel lblTitle = new JLabel("회원가입");
-        lblTitle.setFont(new Font("Serif", Font.BOLD, 24));
+        lblTitle.setFont(new Font("Serif", Font.BOLD, 24));  // LoginScreen과 동일한 폰트
         lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
         lblTitle.setBounds(50, 20, 200, 40);
         contentPane.add(lblTitle);
 
         // 이메일 입력
         JLabel lblEmail = new JLabel("이메일");
+        lblEmail.setFont(new Font("Arial", Font.PLAIN, 14));  // LoginScreen과 동일한 폰트
         lblEmail.setBounds(40, 80, 80, 20);
         contentPane.add(lblEmail);
 
         txtEmail = new JTextField();
+        txtEmail.setFont(new Font("Arial", Font.PLAIN, 14));  // LoginScreen과 동일한 폰트
         txtEmail.setBounds(120, 80, 140, 30);
         contentPane.add(txtEmail);
 
         // 비밀번호 입력
         JLabel lblPassword = new JLabel("비밀번호");
+        lblPassword.setFont(new Font("Arial", Font.PLAIN, 14));  // LoginScreen과 동일한 폰트
         lblPassword.setBounds(40, 130, 80, 20);
         contentPane.add(lblPassword);
 
         txtPassword = new JTextField();
+        txtPassword.setFont(new Font("Arial", Font.PLAIN, 14));  // LoginScreen과 동일한 폰트
         txtPassword.setBounds(120, 130, 140, 30);
         contentPane.add(txtPassword);
 
-        // 포트 번호 입력 (고정값 5001)
-        JLabel lblPort = new JLabel("포트 번호");
-        lblPort.setBounds(40, 180, 80, 20);
-        contentPane.add(lblPort);
-
-        txtPortNumber = new JTextField("5001");
-        txtPortNumber.setBounds(120, 180, 140, 30);
-        txtPortNumber.setEditable(false);  // 포트 번호 필드를 수정 불가로 설정
-        contentPane.add(txtPortNumber);
-
         // 사용자 이름 입력
         JLabel lblUserName = new JLabel("이름");
-        lblUserName.setBounds(40, 230, 80, 20);
+        lblUserName.setFont(new Font("Arial", Font.PLAIN, 14));  // LoginScreen과 동일한 폰트
+        lblUserName.setBounds(40, 180, 80, 20);
         contentPane.add(lblUserName);
 
         txtUserName = new JTextField();
-        txtUserName.setBounds(120, 230, 140, 30);
+        txtUserName.setFont(new Font("Arial", Font.PLAIN, 14));  // LoginScreen과 동일한 폰트
+        txtUserName.setBounds(120, 180, 140, 30);
         contentPane.add(txtUserName);
 
         // 회원가입 버튼
         JButton btnRegister = new JButton("회원가입");
-        btnRegister.setBounds(90, 290, 120, 40);
+        btnRegister.setFont(new Font("Arial", Font.BOLD, 16));  // LoginScreen과 동일한 폰트
+        btnRegister.setBounds(90, 250, 120, 40);
         contentPane.add(btnRegister);
 
         // 회원가입 버튼 클릭 이벤트
         btnRegister.addActionListener(e -> {
             String email = txtEmail.getText().trim();
             String password = txtPassword.getText().trim();
-            String port = txtPortNumber.getText().trim();
             String userName = txtUserName.getText().trim();
 
-            if (email.isEmpty() || password.isEmpty() || port.isEmpty() || userName.isEmpty()) {
+            if (email.isEmpty() || password.isEmpty() || userName.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
                         "모든 필드를 입력해야 합니다.",
                         "회원가입 실패",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
+            // 포트 번호는 고정값 5001로 설정
+            String port = "5001";
 
             User newUser = User.builder()
                     .email(email)
