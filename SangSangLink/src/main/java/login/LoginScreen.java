@@ -56,7 +56,7 @@ public class LoginScreen extends JFrame {
 		// 이미지 추가 (SangSangLink 오른쪽)
 		ImageIcon icon = new ImageIcon(getClass().getResource("/static/images/bugi.jpeg"));
 		JLabel lblImage = new JLabel(new ImageIcon(getCircularImage(icon.getImage())));
-		lblImage.setBounds(230, 20, 50, 50); // 크기 조정 및 위치 설정
+		lblImage.setBounds(230, 15, 50, 50); // 크기 조정 및 위치 설정
 		contentPane.add(lblImage);
 
 		// User Name 라벨

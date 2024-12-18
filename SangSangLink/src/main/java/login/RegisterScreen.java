@@ -6,6 +6,7 @@ import model.User;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class RegisterScreen extends JFrame {
@@ -28,48 +29,54 @@ public class RegisterScreen extends JFrame {
         contentPane.setLayout(null);
 
         JLabel lblTitle = new JLabel("회원가입");
-        lblTitle.setFont(new Font("Serif", Font.BOLD, 24));  // LoginScreen과 동일한 폰트
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 24));  // LoginScreen과 동일한 폰트
         lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
-        lblTitle.setBounds(50, 20, 200, 40);
+        lblTitle.setBounds(50, 30, 200, 40);
         contentPane.add(lblTitle);
+
+        // 이미지 추가 (SangSangLink 오른쪽)
+        ImageIcon icon = new ImageIcon(getClass().getResource("/static/images/bugi.jpeg"));
+        JLabel lblImage = new JLabel(new ImageIcon(getCircularImage(icon.getImage())));
+        lblImage.setBounds(230, 25, 50, 50); // 크기 조정 및 위치 설정
+        contentPane.add(lblImage);
 
         // 이메일 입력
         JLabel lblEmail = new JLabel("이메일");
         lblEmail.setFont(new Font("Arial", Font.PLAIN, 14));  // LoginScreen과 동일한 폰트
-        lblEmail.setBounds(40, 80, 80, 20);
+        lblEmail.setBounds(40, 120, 80, 20);
         contentPane.add(lblEmail);
 
         txtEmail = new JTextField();
         txtEmail.setFont(new Font("Arial", Font.PLAIN, 14));  // LoginScreen과 동일한 폰트
-        txtEmail.setBounds(120, 80, 140, 30);
+        txtEmail.setBounds(120, 120, 140, 30);
         contentPane.add(txtEmail);
 
         // 비밀번호 입력
         JLabel lblPassword = new JLabel("비밀번호");
         lblPassword.setFont(new Font("Arial", Font.PLAIN, 14));  // LoginScreen과 동일한 폰트
-        lblPassword.setBounds(40, 130, 80, 20);
+        lblPassword.setBounds(40, 170, 80, 20);
         contentPane.add(lblPassword);
 
         txtPassword = new JTextField();
         txtPassword.setFont(new Font("Arial", Font.PLAIN, 14));  // LoginScreen과 동일한 폰트
-        txtPassword.setBounds(120, 130, 140, 30);
+        txtPassword.setBounds(120, 170, 140, 30);
         contentPane.add(txtPassword);
 
         // 사용자 이름 입력
         JLabel lblUserName = new JLabel("이름");
         lblUserName.setFont(new Font("Arial", Font.PLAIN, 14));  // LoginScreen과 동일한 폰트
-        lblUserName.setBounds(40, 180, 80, 20);
+        lblUserName.setBounds(40, 220, 80, 20);
         contentPane.add(lblUserName);
 
         txtUserName = new JTextField();
         txtUserName.setFont(new Font("Arial", Font.PLAIN, 14));  // LoginScreen과 동일한 폰트
-        txtUserName.setBounds(120, 180, 140, 30);
+        txtUserName.setBounds(120, 220, 140, 30);
         contentPane.add(txtUserName);
 
         // 회원가입 버튼
         JButton btnRegister = new JButton("회원가입");
         btnRegister.setFont(new Font("Arial", Font.BOLD, 16));  // LoginScreen과 동일한 폰트
-        btnRegister.setBounds(90, 250, 120, 40);
+        btnRegister.setBounds(90, 300, 120, 40);
         contentPane.add(btnRegister);
 
         // 회원가입 버튼 클릭 이벤트
@@ -112,4 +119,19 @@ public class RegisterScreen extends JFrame {
             }
         });
     }
+
+    // 이미지 원형으로 만드는 메소드
+    private Image getCircularImage(Image image) {
+        int diameter = Math.min(image.getWidth(null), image.getHeight(null));  // 이미지 크기 중 작은 값을 반지름으로 사용
+        BufferedImage bufferedImage = new BufferedImage(diameter, diameter, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = bufferedImage.createGraphics();
+
+        // 원형 모양으로 자르기 위한 Clip 설정
+        g.setClip(new java.awt.geom.Ellipse2D.Double(0, 0, diameter, diameter));
+        g.drawImage(image, 0, 0, null);
+        g.dispose();
+
+        return bufferedImage;
+    }
+
 }
