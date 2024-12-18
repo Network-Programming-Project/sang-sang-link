@@ -83,6 +83,20 @@ public class LoginScreen extends JFrame {
 		txtPassword.setBounds(90, 175, 120, 30);
 		contentPane.add(txtPassword);
 
+		// 회원가입 버튼
+		JButton btnRegister = new JButton("회원가입");
+		btnRegister.setFont(new Font("Arial", Font.BOLD, 16));
+		btnRegister.setBounds(90, 250, 120, 40);
+		contentPane.add(btnRegister);
+
+		// 회원가입 버튼 클릭 시 액션
+		btnRegister.addActionListener(e -> {
+			setVisible(false); // LoginScreen 숨기기
+			RegisterScreen registerScreen = new RegisterScreen(this); // 현재 창을 전달
+			registerScreen.setVisible(true); // RegisterScreen 표시
+		});
+
+
 		// 로그인 버튼
 		JButton btnLogin = new JButton("로그인");
 		btnLogin.setFont(new Font("Arial", Font.BOLD, 16));
