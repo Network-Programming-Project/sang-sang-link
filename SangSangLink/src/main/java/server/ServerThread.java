@@ -46,17 +46,18 @@ class ServerThread extends Thread {
 
                 JsonMessage jsonMessage = gson.fromJson(receivedJson, JsonMessage.class);
 
+                // TODO ServerManager.list에 이미 userid, chatroomid를 동시에 만족하는 스레드가 있는지 체크 후 종료
                 // 최초 접속 시 userId, chatRoomId 설정
                 if (this.userId == null && this.chatRoomId == null) {
                     this.userId = jsonMessage.userId;
                     this.chatRoomId = jsonMessage.chatRoomId;
 
                     ServerManager.list.add(new ChatRoomThread(chatRoomId, this));
-                    System.out.println("서버매니저 채팅방 map체크"+ServerManager.list);
-                    os.writeUTF("채팅방 " + chatRoomId +"에 "+userId+"가 입장했습니다.");
+                    System.out.println("서버매니저 채팅방 리스트체크"+ServerManager.list);
+                    //os.writeUTF("채팅방 " + chatRoomId +"에 "+userId+"가 입장했습니다.");
                 } else {
                     // 이후부터는 메시지 전송
-                    sendMessageToChatRoom(jsonMessage.message);
+                    sendMessageToChatRoom(receivedJson);
                 }
 
             } catch (IOException e) {
