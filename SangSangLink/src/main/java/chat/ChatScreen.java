@@ -1,7 +1,11 @@
 package chat;
 
+import com.google.gson.Gson;
+import db.UserDB;
 import main.MainScreen;
+import model.ChatRoom;
 import model.User;
+import session.Session;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -15,19 +19,29 @@ public class ChatScreen extends JPanel {
     private JTextArea textArea;
     private JTextField txtInput;
     private JButton btnSend;
-    private String userName;
     private String ipAddr;
     private String portNo;
+    private User user;
+
+    // 소켓
     private Socket socket;
     private DataInputStream dis;
     private DataOutputStream dos;
 
-    public ChatScreen() {
+    // 채팅방 정보 객체
+    private ChatRoom chatRoom;
 
-        this.userName = userName;
-        this.ipAddr = ipAddr;
+    // json 파싱 객체
+    private Gson gson = new Gson();
+
+    // TODO 채팅 창 나오면 이전에 있던 대화내용도 그려야함.
+    public ChatScreen(ChatRoom chatRoom, User user) {
+
+        this.user=user;
+        this.ipAddr = "127.0.0.1";
         // TODO 포트넘버 로직 추가 예정 고정으로 가야할듯
         this.portNo = "50001";
+        this.chatRoom=chatRoom;
 
         setLayout(null);
         setBounds(60, 0, 320, 500);
@@ -66,7 +80,7 @@ public class ChatScreen extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String msg = txtInput.getText();
-                sendMessage(msg);
+                sendMessage(createJsonMessage(user.getId(), chatRoom.getId(), msg));
                 txtInput.setText("");
             }
         });
@@ -75,9 +89,10 @@ public class ChatScreen extends JPanel {
         txtInput.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String msg = "[" + userName + "] " + txtInput.getText();
-                sendMessage(msg);
+                String msg = txtInput.getText();
+                sendMessage(createJsonMessage(user.getId(), chatRoom.getId(), msg));
                 txtInput.setText("");
+                System.out.println("ChatScreen 메시지 전송 액션 리스너 유저 객체 확인: "+ user);
             }
         });
 
@@ -86,7 +101,10 @@ public class ChatScreen extends JPanel {
             dis = new DataInputStream(socket.getInputStream());
             dos = new DataOutputStream(socket.getOutputStream());
 
-            sendMessage("/login " + userName);
+            // JSON 형식으로 채팅방 ID를 서버에 전송
+            // 첫 메시지
+            sendMessage(createJsonMessage(user.getId(), chatRoom.getId(), "입장"));
+            System.out.println("Sent JSON: " + createJsonMessage(user.getId(), chatRoom.getId(), "입장"));
 
             ListenNetwork net = new ListenNetwork();
             net.start();
@@ -96,6 +114,13 @@ public class ChatScreen extends JPanel {
         }
     }
 
+    // JSON 메시지 생성
+    private String createJsonMessage(Long userId, Long chatRoomId, String message) {
+        JsonMessage jsonMessage = new JsonMessage(userId, chatRoomId, message);
+        return gson.toJson(jsonMessage);
+    }
+
+    // 변경 부분 없음
     public void sendMessage(String msg) {
         try {
             dos.writeUTF(msg);
@@ -103,6 +128,8 @@ public class ChatScreen extends JPanel {
             appendText("Error sending message\n");
         }
     }
+
+    // 변경 부분 없음
     public void appendText(String msg) {
         textArea.append(msg);
         textArea.setCaretPosition(textArea.getText().length());
@@ -119,12 +146,25 @@ public class ChatScreen extends JPanel {
             while (true) {
                 try {
                     String msg = dis.readUTF();
+                    System.out.println(user.getUserName()+"메시지 받음"+msg);
                     appendText(msg + "\n");
                 } catch (IOException e) {
                     appendText("Connection lost\n");
                     break;
                 }
             }
+        }
+    }
+
+    static class JsonMessage {
+        private Long chatRoomId;
+        private Long userId;
+        private String message;
+
+        public JsonMessage(Long userId, Long chatRoomId, String message) {
+            this.chatRoomId = chatRoomId;
+            this.userId = userId;
+            this.message = message;
         }
     }
 }

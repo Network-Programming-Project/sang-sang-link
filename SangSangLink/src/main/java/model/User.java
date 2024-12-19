@@ -11,11 +11,27 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    private Long id;
+    private volatile Long id;
     private String email;
     private String userName;
     private String password;
     private String port;
     private List<User> friends;
-    private List<ChatRoom> chatRooms;
+    private volatile List<ChatRoom> chatRooms;
+
+    public void addChatRoom(ChatRoom chatRoom) {
+        chatRooms.add(chatRoom);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", userName='" + userName + '\'' +
+                ", port=" + port +
+                ", friends=" + friends.stream().map(User::getId).toList() + // 친구의 ID만 출력
+                ", chatRooms=" + chatRooms.stream().map(ChatRoom::getId).toList() + // 채팅방의 ID만 출력
+                '}';
+    }
 }

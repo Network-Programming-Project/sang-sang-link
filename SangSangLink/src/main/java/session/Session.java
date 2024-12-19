@@ -3,9 +3,13 @@ package session;
 import model.User;
 
 public class Session {
-    static public User user;
+    private static final ThreadLocal<User> userThreadLocal = new ThreadLocal<>();
 
-    public static void setUser(User user){
-        Session.user = user;
+    public static void setUser(User user) {
+        userThreadLocal.set(user);
+    }
+
+    public static User getUser() {
+        return userThreadLocal.get();
     }
 }

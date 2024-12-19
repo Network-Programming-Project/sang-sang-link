@@ -1,9 +1,11 @@
 package chat;
 
 import db.ChatRoomDB;
+import db.UserDB;
 import main.MainScreen;
 import model.ChatRoom;
 import model.User;
+import session.Session;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,9 +16,10 @@ import java.util.List;
 public class ChatListScreen extends JPanel {
     private JScrollPane scrollPane;
     private JPanel roomListPanel; // 실제 채팅방 목록이 들어갈 패널
+    private User user;
 
-    public ChatListScreen() {
-
+    public ChatListScreen(User user) {
+        this.user = user;
         // 패널 기본 설정
         setLayout(null);
         setBounds(60, 0, 320, 500);
@@ -37,7 +40,11 @@ public class ChatListScreen extends JPanel {
         add(scrollPane);
 
         // ChatRoomDB로부터 채팅방 목록 가져오기
-        List<ChatRoom> chatRooms = ChatRoomDB.getChatRooms();
+        List<ChatRoom> chatRooms = ChatRoomDB.getChatRoomsByUserId(Session.getUser().getId());
+        System.out.println("chatRoomList 채팅방 목록 가져오기 사용자 id"+Session.getUser().getId());
+
+        System.out.println("chatRoomList 개인 사용자 채팅방"+chatRooms);
+        System.out.println("chatRoomList 모든 사용자 정보 가져오기: "+ UserDB.users);
 
         // 채팅방 패널 생성 및 추가
         for (ChatRoom room : chatRooms) {
@@ -85,7 +92,7 @@ public class ChatListScreen extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 // 채팅방 클릭 시 ChatScreen으로 전환
-                showChatScreen(room);
+                showChatScreen(room, user);
             }
         });
 
@@ -94,10 +101,11 @@ public class ChatListScreen extends JPanel {
         return roomPanel;
     }
 
-    private void showChatScreen(ChatRoom room) {
+    // 메인 스크린에 요청하는 콜백
+    private void showChatScreen(ChatRoom room, User user) {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         if (frame instanceof MainScreen mainScreen) {
-            mainScreen.showChatScreen();
+            mainScreen.showChatScreen(room, user);
         }
     }
 

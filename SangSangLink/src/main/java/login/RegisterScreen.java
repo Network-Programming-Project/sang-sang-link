@@ -102,6 +102,7 @@ public class RegisterScreen extends JFrame {
                     .port(port)
                     .userName(userName)
                     .friends(new ArrayList<>())
+                    .chatRooms(new ArrayList<>())
                     .build();
 
             if (UserDB.register(newUser)) {

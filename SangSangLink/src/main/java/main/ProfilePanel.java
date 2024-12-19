@@ -22,7 +22,7 @@ public class ProfilePanel extends JPanel {
         lblAvatar.setBounds(20, 50, 50, 50);
         add(lblAvatar);
 
-        lblUserName = new JLabel("사용자: " + Session.user.getUserName());
+        lblUserName = new JLabel("사용자: " + Session.getUser().getUserName());
         lblUserName.setBounds(80, 60, 200, 30);
         add(lblUserName);
 

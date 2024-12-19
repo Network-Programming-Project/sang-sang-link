@@ -110,15 +110,15 @@ public class LoginScreen extends JFrame {
 
 			String email = txtEmail.getText().trim();
 			String password = txtPassword.getText().trim();
-			System.out.println("이메일"+email);
-			System.out.println("비밀번호"+password);
+			System.out.println("로그인: 이메일"+email);
+			System.out.println("로그인: 비밀번호"+password);
 			// 로그인
 			User user=UserDB.login(email, password);
 
 			if(user!=null){
 				// 세션 저장
 				Session.setUser(user);
-				MainScreen mainScreen = new MainScreen();
+				MainScreen mainScreen = new MainScreen(user);
 				mainScreen.setVisible(true); // ChatScreen 보이기
 
 				setVisible(false); // LoginScreen 숨기기

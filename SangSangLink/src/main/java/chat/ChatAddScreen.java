@@ -33,7 +33,7 @@ public class ChatAddScreen extends JPanel {
         add(roomNameField);
 
         // 초대할 친구 리스트
-        User user = Session.user;
+        User user = Session.getUser();
         List<User> friends = user.getFriends();
         List<String> friendsNames=new ArrayList<>();
 

@@ -1,24 +1,37 @@
 package server;
 
+import com.google.gson.Gson;
+import db.UserDB;
+import model.ChatRoom;
+import model.User;
+import session.Session;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 
 class ServerThread extends Thread {
-    Scanner scn = new Scanner(System.in);
-    private String name;
+    // 스레드 정보
+    private Long userId;
+    private Long chatRoomId;
+
+    // 소켓 정보
+    Socket s;
     final DataInputStream is;
     final DataOutputStream os;
-    Socket s;
-    boolean active;
 
-    public ServerThread(Socket s, String name, DataInputStream is, DataOutputStream os) {
+    boolean active;
+    private final Gson gson = new Gson();
+
+    public ServerThread(Socket s, DataInputStream is, DataOutputStream os) {
         this.is = is;
         this.os = os;
-        this.name = name;
         this.s = s;
         this.active = true;
     }
@@ -28,11 +41,24 @@ class ServerThread extends Thread {
         String message;
         while (true) {
             try {
-                message = is.readUTF();        // 어떤 클라이언트로  부터 들어오는 데이터를 읽어들여서
-                System.out.println(message);   // (일단 서버의 콘솔장에 출력해서 확인하고)
-                for (ServerThread t : ServerManager.list) {        // ArrayList에 등록되어 있는 모든 사용자에게 순서대로 그 메시지 전달
-                    t.os.writeUTF(this.name + " : " + message);   // t 사용자와 통신하는 스레드 안의 os.writeUTF()를 호출하여 메시지 전달
+                String receivedJson = is.readUTF(); // 클라이언트로부터 JSON 수신
+                System.out.println("Received JSON: " + receivedJson);
+
+                JsonMessage jsonMessage = gson.fromJson(receivedJson, JsonMessage.class);
+
+                // 최초 접속 시 userId, chatRoomId 설정
+                if (this.userId == null && this.chatRoomId == null) {
+                    this.userId = jsonMessage.userId;
+                    this.chatRoomId = jsonMessage.chatRoomId;
+
+                    ServerManager.list.add(new ChatRoomThread(chatRoomId, this));
+                    System.out.println("서버매니저 채팅방 map체크"+ServerManager.list);
+                    os.writeUTF("채팅방 " + chatRoomId +"에 "+userId+"가 입장했습니다.");
+                } else {
+                    // 이후부터는 메시지 전송
+                    sendMessageToChatRoom(jsonMessage.message);
                 }
+
             } catch (IOException e) {
                 e.printStackTrace();
                 break;
@@ -44,6 +70,26 @@ class ServerThread extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // 해당하는 스레드들을 가지고 메시지 전송
+    private void sendMessageToChatRoom(String message) throws IOException {
+        List<ChatRoomThread> list = ServerManager.list;
+
+        for(ChatRoomThread chatRoomThread : list) {
+            if(chatRoomId.equals(chatRoomThread.getChatRoomId())){
+                chatRoomThread.getServerThread().os.writeUTF(message);
+            }
+        }
+    }
+
+    // JSON 메시지 클래스
+    private static class JsonMessage {
+        Long chatRoomId;
+        Long userId;
+        String message;
+
+        public JsonMessage() {}
     }
 }
 

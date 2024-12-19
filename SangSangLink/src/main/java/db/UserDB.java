@@ -7,7 +7,7 @@ import java.util.List;
 
 // 사용자 데이터베이스
 public class UserDB {
-    private static List<User> users = new ArrayList<>();
+    public static List<User> users = new ArrayList<>();
     private static Long autoIncrement = 0L;
 
     // 초기 데이터
@@ -15,25 +15,28 @@ public class UserDB {
         User user2 = User.builder()
                 .email("angry7319@naver.com")
                 .password("1234")
-                .port("5001")
+                .port("50001")
                 .userName("jiwon")
                 .friends(new ArrayList<>())
+                .chatRooms(new ArrayList<>())
                 .build();
 
         User user3 = User.builder()
                 .email("email@naver.com")
                 .password("1234")
-                .port("5001")
+                .port("50001")
                 .userName("uwok")
                 .friends(new ArrayList<>())
+                .chatRooms(new ArrayList<>())
                 .build();
 
         User user1 = User.builder()
                 .email("hansung.ac.kr")
                 .password("1234")
-                .port("5001")
+                .port("50001")
                 .userName("bugi")
                 .friends(List.of(user2, user3))
+                .chatRooms(new ArrayList<>())
                 .build();
 
         insert(user1);
@@ -50,6 +53,15 @@ public class UserDB {
     public static User getUser(String userName) {
         for (User user : users) {
             if (user.getUserName().equals(userName)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public static User getUserById(Long id) {
+        for (User user : users) {
+            if (user.getId().equals(id)) {
                 return user;
             }
         }

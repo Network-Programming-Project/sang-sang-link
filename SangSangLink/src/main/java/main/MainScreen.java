@@ -4,6 +4,7 @@ import chat.ChatAddScreen;
 import chat.ChatListScreen;
 import chat.ChatScreen;
 import main.*;
+import model.ChatRoom;
 import model.User;
 
 import javax.swing.*;
@@ -22,8 +23,10 @@ public class MainScreen extends JFrame {
     private ChatListScreen chatListScreen;
     private ChatAddScreen chatAddScreen;
     private ChatScreen chatScreen;
+    private User user;
 
-    public MainScreen() {
+    public MainScreen(User user) {
+        this.user = user;
         initialize();
     }
 
@@ -51,7 +54,7 @@ public class MainScreen extends JFrame {
         profilePanel.setVisible(true);
         centerPanel.add(profilePanel);
 
-        chatListScreen = new ChatListScreen();
+        chatListScreen = new ChatListScreen(user);
         chatListScreen.setBounds(0,0,320,500);
         centerPanel.add(chatListScreen);
         chatListScreen.setVisible(false);
@@ -60,12 +63,6 @@ public class MainScreen extends JFrame {
         chatAddScreen.setBounds(0,0,320,500);
         centerPanel.add(chatAddScreen);
         chatAddScreen.setVisible(false);
-
-        // ChatScreen은 필요할 때 생성 또는 재사용 가능
-        chatScreen = new ChatScreen();
-        chatScreen.setBounds(0,0,320,500);
-        centerPanel.add(chatScreen);
-        chatScreen.setVisible(false);
 
         // 이벤트 연결
         sideMenu.setProfileClickListener(e -> {
@@ -96,13 +93,16 @@ public class MainScreen extends JFrame {
         centerPanel.repaint();
     }
 
-    public void showChatScreen() {
-        // centerPanel 내 다른 패널 숨기고 chatScreen 보여주기
-        showPanel(chatScreen);
-    }
+    public void showChatScreen(ChatRoom chatRoom, User user) {
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new MainScreen().setVisible(true));
+        // centerPanel 내 다른 패널 숨기고 chatScreen 보여주기
+        // ChatScreen은 필요할 때 생성 또는 재사용 가능
+        chatScreen = new ChatScreen(chatRoom, user);
+        chatScreen.setBounds(0,0,320,500);
+        centerPanel.add(chatScreen);
+        chatScreen.setVisible(false);
+
+        showPanel(chatScreen);
     }
 }
 
