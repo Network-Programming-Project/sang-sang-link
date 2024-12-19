@@ -1,6 +1,7 @@
 package main;
 
 import chat.ChatAddScreen;
+import chat.ChatGraphicScreen;
 import chat.ChatListScreen;
 import chat.ChatScreen;
 import main.*;
@@ -23,6 +24,7 @@ public class MainScreen extends JFrame {
     private ChatListScreen chatListScreen;
     private ChatAddScreen chatAddScreen;
     private ChatScreen chatScreen;
+    private ChatGraphicScreen chatGraphicScreen;
     private User user;
 
     public MainScreen(User user) {
@@ -99,12 +101,19 @@ public class MainScreen extends JFrame {
 
         // centerPanel 내 다른 패널 숨기고 chatScreen 보여주기
         // ChatScreen은 필요할 때 생성 또는 재사용 가능
-        chatScreen = new ChatScreen(chatRoom, user);
-        chatScreen.setBounds(0,0,320,500);
-        centerPanel.add(chatScreen);
-        chatScreen.setVisible(false);
+//        chatScreen = new ChatScreen(chatRoom, user);
+//        chatScreen.setBounds(0,0,320,500);
+//        centerPanel.add(chatScreen);
+//        chatScreen.setVisible(false);
+//
+//        showPanel(chatScreen);
 
-        showPanel(chatScreen);
+        chatGraphicScreen = new ChatGraphicScreen(chatRoom, user);
+        chatGraphicScreen.setBounds(0,0,320,500);
+        centerPanel.add(chatGraphicScreen);
+        chatGraphicScreen.setVisible(false);
+
+        showPanel(chatGraphicScreen);
     }
 }
 
