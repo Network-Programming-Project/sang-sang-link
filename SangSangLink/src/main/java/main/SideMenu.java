@@ -11,33 +11,58 @@ public class SideMenu extends JPanel {
     private JLabel lblChat;
     private JLabel lblChatAdd;
 
-    public SideMenu(){
+    public SideMenu() {
         initialization();
     }
 
-    private void initialization(){
-        setBackground(Color.LIGHT_GRAY);
-        setBounds(0, 0, 50, 500);
-        setLayout(new GridLayout(2, 1, 0, 10));
+    private void initialization() {
+        setBackground(Color.DARK_GRAY);
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        // 공통 설정
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 0, 50, 0); // 상하 여백을 줄임
 
         // 프로필 아이콘
-        lblProfile = new JLabel(new ImageIcon(getClass().getResource("/static/images/profile.jpeg")));
-        lblProfile.setHorizontalAlignment(SwingConstants.CENTER);
-        lblProfile.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        add(lblProfile);
+        lblProfile = createIconLabel("/static/images/profile.jpeg");
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        add(lblProfile, gbc);
 
         // 채팅 아이콘
-        lblChat = new JLabel(new ImageIcon(getClass().getResource("/static/images/chat.jpeg")));
-        lblChat.setHorizontalAlignment(SwingConstants.CENTER);
-        lblChat.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        add(lblChat);
+        lblChat = createIconLabel("/static/images/chat.jpeg");
+        gbc.gridy = 1;
+        add(lblChat, gbc);
 
         // 채팅 추가 아이콘
-        // TODO 아이콘 수정 및 메뉴 배치 수정 필요
-        lblChatAdd = new JLabel(new ImageIcon(getClass().getResource("/static/images/chat.jpeg")));
-        lblChatAdd.setHorizontalAlignment(SwingConstants.CENTER);
-        lblChatAdd.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        add(lblChatAdd);
+        lblChatAdd = createIconLabel("/static/images/chat.jpeg");
+        gbc.gridy = 2;
+        add(lblChatAdd, gbc);
+
+        // 빈 공간 추가 (중간 점 아이콘처럼 보이게)
+        JLabel lblDots = new JLabel("...");
+        lblDots.setForeground(Color.LIGHT_GRAY);
+        lblDots.setHorizontalAlignment(SwingConstants.CENTER);
+        gbc.gridy = 3;
+        add(lblDots, gbc);
+    }
+
+    // 공통 아이콘 생성 메서드
+    private JLabel createIconLabel(String imagePath) {
+        // 이미지 아이콘 생성
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource(imagePath));
+
+        // 이미지 크기 조정 (원하는 크기로 설정)
+        Image img = originalIcon.getImage();
+        Image resizedImg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // 예: 50x50 크기로 변경
+        ImageIcon resizedIcon = new ImageIcon(resizedImg);
+
+        // 이미지 아이콘을 JLabel에 설정
+        JLabel label = new JLabel(resizedIcon);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return label;
     }
 
     // 프로필 클릭 리스너 설정
@@ -60,7 +85,7 @@ public class SideMenu extends JPanel {
         });
     }
 
-    // 채팅 추가 리스너 설정
+    // 채팅 추가 클릭 리스너 설정
     public void setChatAddClickListener(Consumer<MouseEvent> onClick) {
         lblChatAdd.addMouseListener(new MouseAdapter() {
             @Override

@@ -5,17 +5,17 @@ import model.ChatRoom;
 import model.User;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.net.Socket;
+import java.util.List;
 
 public class ChatScreen extends JPanel {
     private JTextArea textArea;
     private JTextField txtInput;
-    private JButton btnSend;
+    private JButton btnSend, btnEmoticon, btnAttach;
     private String ipAddr;
     private String portNo;
     private User user;
@@ -28,23 +28,22 @@ public class ChatScreen extends JPanel {
     // 채팅방 정보 객체
     private ChatRoom chatRoom;
 
+    // 이모티콘 패널
+    private JDialog emoticonDialog;
+
     // json 파싱 객체
     private Gson gson = new Gson();
 
-    // TODO 채팅 창 나오면 이전에 있던 대화내용도 그려야함.
     public ChatScreen(ChatRoom chatRoom, User user) {
-
-        this.user=user;
+        this.user = user;
         this.ipAddr = "127.0.0.1";
-        // TODO 포트넘버 로직 추가 예정 고정으로 가야할듯
         this.portNo = "50001";
-        this.chatRoom=chatRoom;
+        this.chatRoom = chatRoom;
 
         setLayout(null);
         setBounds(60, 0, 320, 500);
         setVisible(false); // 기본적으로 숨김 상태
 
-        // 컴포넌트 초기화
         initializeComponents();
     }
 
@@ -55,7 +54,6 @@ public class ChatScreen extends JPanel {
         add(scrollPane);
 
         // 텍스트 영역
-        // TODO 채팅방으로 꾸미기
         textArea = new JTextArea();
         textArea.setEditable(false);
         scrollPane.setViewportView(textArea);
@@ -67,10 +65,19 @@ public class ChatScreen extends JPanel {
         txtInput.setColumns(10);
 
         // 전송 버튼
-        // TODO 전송 버튼 디자인
         btnSend = new JButton("보내기");
         btnSend.setBounds(250, 400, 60, 40);
         add(btnSend);
+
+        // 이모티콘 버튼
+        btnEmoticon = new JButton("😊");
+        btnEmoticon.setBounds(10, 450, 50, 40);
+        add(btnEmoticon);
+
+        // 파일 첨부 버튼
+        btnAttach = new JButton("사진");
+        btnAttach.setBounds(70, 450, 60, 40);
+        add(btnAttach);
 
         // 전송 버튼 액션
         btnSend.addActionListener(new ActionListener() {
@@ -82,14 +89,29 @@ public class ChatScreen extends JPanel {
             }
         });
 
-        // Enter 키로 메시지 전송
-        txtInput.addActionListener(new ActionListener() {
+        // 이모티콘 버튼 액션
+        btnEmoticon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String msg = txtInput.getText();
-                sendMessage(createJsonMessage(user.getId(), chatRoom.getId(), msg));
-                txtInput.setText("");
-                System.out.println("ChatScreen 메시지 전송 액션 리스너 유저 객체 확인: "+ user);
+                // 이모티콘 다이얼로그 띄우기
+                showEmoticonDialog();
+            }
+        });
+
+        // 사진 버튼 액션
+        btnAttach.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 사진 파일 선택
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "png", "gif"));
+                int returnValue = fileChooser.showOpenDialog(null);
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    String imagePath = selectedFile.getAbsolutePath();
+                    // 선택된 이미지를 전송 (파일 전송 로직 필요)
+                    sendMessage(createJsonMessage(user.getId(), chatRoom.getId(), "사진: " + imagePath));
+                }
             }
         });
 
@@ -98,10 +120,8 @@ public class ChatScreen extends JPanel {
             dis = new DataInputStream(socket.getInputStream());
             dos = new DataOutputStream(socket.getOutputStream());
 
-            // JSON 형식으로 채팅방 ID를 서버에 전송
             // 첫 메시지
             sendMessage(createJsonMessage(user.getId(), chatRoom.getId(), "입장"));
-            System.out.println("Sent JSON: " + createJsonMessage(user.getId(), chatRoom.getId(), "입장"));
 
             ListenNetwork net = new ListenNetwork();
             net.start();
@@ -111,13 +131,37 @@ public class ChatScreen extends JPanel {
         }
     }
 
-    // JSON 메시지 생성
+    private void showEmoticonDialog() {
+        // 이모티콘 선택을 위한 다이얼로그 생성
+        emoticonDialog = new JDialog();
+        emoticonDialog.setTitle("이모티콘 선택");
+        emoticonDialog.setLayout(new GridLayout(3, 3));
+        emoticonDialog.setSize(200, 200);
+        emoticonDialog.setLocationRelativeTo(null);
+
+        // 이모티콘 버튼들 생성
+        String[] emoticons = { "😊", "😂", "😢", "😍", "😎", "😡", "😜", "😇", "😱" };
+        for (String emoticon : emoticons) {
+            JButton emoticonButton = new JButton(emoticon);
+            emoticonButton.setFont(new Font("Arial", Font.PLAIN, 30));
+            emoticonButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // 이모티콘 클릭 시 텍스트 필드에 이모티콘 추가
+                    txtInput.setText(txtInput.getText() + emoticon);
+                    emoticonDialog.dispose(); // 다이얼로그 닫기
+                }
+            });
+            emoticonDialog.add(emoticonButton);
+        }
+        emoticonDialog.setVisible(true);
+    }
+
     private String createJsonMessage(Long userId, Long chatRoomId, String message) {
         JsonMessage jsonMessage = new JsonMessage(userId, chatRoomId, message);
         return gson.toJson(jsonMessage);
     }
 
-    // 변경 부분 없음
     public void sendMessage(String msg) {
         try {
             dos.writeUTF(msg);
@@ -126,24 +170,16 @@ public class ChatScreen extends JPanel {
         }
     }
 
-    // 변경 부분 없음
     public void appendText(String msg) {
         textArea.append(msg);
         textArea.setCaretPosition(textArea.getText().length());
     }
 
-    // 서버로부터 메시지를 받을 때 호출되는 메소드
-    public void receiveMessage(String message) {
-        textArea.append("Server: " + message + "\n");
-    }
-
-    // 서버에서 메시지 수신
     class ListenNetwork extends Thread {
         public void run() {
             while (true) {
                 try {
                     String msg = dis.readUTF();
-                    System.out.println(user.getUserName()+"메시지 받음"+msg);
                     appendText(msg + "\n");
                 } catch (IOException e) {
                     appendText("Connection lost\n");
