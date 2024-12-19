@@ -128,17 +128,6 @@ public class ChatGraphicScreen extends JPanel {
     private void sendMessage(Long userId, Long chatRoomId, String message) {
         try {
             dos.writeUTF(createJsonMessage(userId, chatRoomId, message));
-//            if (message.isEmpty()) return;
-//
-//            // 메시지 생성
-//            ChatRoomMessage chatRoomMessage = new ChatRoomMessage(
-//                    null, message, java.time.LocalDateTime.now(), user.getId(), chatRoom.getId()
-//            );
-//
-//            ChatMessageDB.insert(chatRoomMessage);
-//
-//            // UI 업데이트
-//            addMessageBubble(chatRoomMessage);
         } catch (IOException e) {
 
         }
@@ -219,6 +208,9 @@ public class ChatGraphicScreen extends JPanel {
                     // 수신한 메시지 JSON 파싱
                     JsonMessage received = gson.fromJson(msg, JsonMessage.class);
 
+                    if(received.message.equals("/stop")){
+                        break;
+                    }
                     // ChatRoomMessage 생성
                     ChatRoomMessage chatRoomMessage = new ChatRoomMessage(
                             null,
