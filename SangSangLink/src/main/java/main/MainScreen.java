@@ -36,6 +36,7 @@ public class MainScreen extends JFrame {
 
         contentPane = new JPanel(null); // null 레이아웃
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        contentPane.setBackground(new Color(100, 175, 250)); // 배경색 설정
         setContentPane(contentPane);
 
         // 사이드 메뉴
@@ -46,6 +47,7 @@ public class MainScreen extends JFrame {
         // 가운데 패널
         centerPanel = new JPanel(null);
         centerPanel.setBounds(60, 0, 320, 500);
+        contentPane.setBackground(new Color(100, 175, 250)); // 배경색 설정
         contentPane.add(centerPanel);
 
         // 패널들 초기화

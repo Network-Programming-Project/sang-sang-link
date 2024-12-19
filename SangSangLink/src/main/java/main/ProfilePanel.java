@@ -14,6 +14,7 @@ public class ProfilePanel extends JPanel {
 
     public ProfilePanel(String connectTime) {
         setLayout(null);
+        setBackground(new Color(100, 175, 250));  // 전체 배경 색상 설정
 
         JLabel lblTitle = new JLabel("나의 프로필");
         lblTitle.setFont(new Font("Arial", Font.BOLD, 16));

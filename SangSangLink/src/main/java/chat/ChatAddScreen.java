@@ -20,6 +20,7 @@ public class ChatAddScreen extends JPanel {
     public ChatAddScreen() {
         setLayout(null);
         setBounds(60, 0, 320, 500);
+        setBackground(new Color(100, 175, 250));
 
         // 상단 제목 라벨
         titleLabel = new JLabel("채팅방 만들기", SwingConstants.CENTER);

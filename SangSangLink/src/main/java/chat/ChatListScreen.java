@@ -24,6 +24,7 @@ public class ChatListScreen extends JPanel {
         setLayout(null);
         setBounds(60, 0, 320, 500);
         setVisible(false);
+        setBackground(new Color(100, 175, 250));
 
         initialization();
     }
@@ -32,7 +33,7 @@ public class ChatListScreen extends JPanel {
         // 채팅방 목록을 담을 패널 (스크롤 가능)
         roomListPanel = new JPanel();
         roomListPanel.setLayout(new BoxLayout(roomListPanel, BoxLayout.Y_AXIS));
-        roomListPanel.setBackground(Color.WHITE); // 배경 화이트
+        roomListPanel.setBackground(new Color(100, 175, 250)); // 배경
 
         scrollPane = new JScrollPane(roomListPanel);
         scrollPane.setBounds(10, 10, 300, 380);
