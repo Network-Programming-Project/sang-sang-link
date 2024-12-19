@@ -1,11 +1,8 @@
 package chat;
 
 import com.google.gson.Gson;
-import db.UserDB;
-import main.MainScreen;
 import model.ChatRoom;
 import model.User;
-import session.Session;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

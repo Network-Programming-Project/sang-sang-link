@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatRoomMessage {
+public class ChatRoomMessage { // ChatRoom과 User의 매핑 테이블
     private Long id;
 
     // 메시지 내용
@@ -20,4 +20,7 @@ public class ChatRoomMessage {
 
     // 메시지 보낸 사용자 식별
     private Long userId;
+
+    // 속해있는 채팅방
+    private Long chatRoomId;
 }
