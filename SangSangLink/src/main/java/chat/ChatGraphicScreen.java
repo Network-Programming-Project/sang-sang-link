@@ -37,7 +37,6 @@ public class ChatGraphicScreen extends JPanel {
     private DataOutputStream dos;
 
 
-    // TODO 채팅 창 나오면 이전에 있던 대화내용도 그려야함.
     public ChatGraphicScreen(ChatRoom chatRoom, User user) {
 
         this.user=user;
@@ -143,47 +142,83 @@ public class ChatGraphicScreen extends JPanel {
     }
 
     private void addMessageBubble(ChatRoomMessage message) {
-        SwingUtilities.invokeLater(() -> {
-            JPanel bubble = new JPanel();
-            bubble.setLayout(new BorderLayout());
-            bubble.setBorder(new EmptyBorder(5, 10, 5, 10));
+        JPanel bubble = new JPanel();
+        bubble.setLayout(new BoxLayout(bubble, BoxLayout.X_AXIS));
+        bubble.setBorder(new EmptyBorder(5, 10, 5, 10));
 
-            JLabel messageLabel = new JLabel("<html><p style=\"width: 150px;\">" + message.getContent() + "</p></html>");
-            messageLabel.setOpaque(true);
-            messageLabel.setBackground(message.getUserId().equals(user.getId()) ? new Color(255, 255, 204) : Color.WHITE);
-            messageLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-            messageLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        // 번역 아이콘 버튼
+        ImageIcon originalIcon = new ImageIcon(getClass().getResource("/static/images/translate.png"));
+        Image scaledImage = originalIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
-            messageLabel.setPreferredSize(new Dimension(150, 50));
-            messageLabel.setMaximumSize(new Dimension(150, 50));
+        JButton translateButton = new JButton(scaledIcon);
+        translateButton.setPreferredSize(new Dimension(20, 20));
+        translateButton.setBorder(BorderFactory.createEmptyBorder());
+        translateButton.setContentAreaFilled(false);
 
-            JLabel timeLabel = new JLabel("");
-            timeLabel.setFont(new Font("Arial", Font.PLAIN, 10));
-            timeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-
-            if (message.getUserId().equals(user.getId())) {
-                bubble.add(messageLabel, BorderLayout.EAST);
-                bubble.add(timeLabel, BorderLayout.WEST);
-            } else {
-                bubble.add(messageLabel, BorderLayout.WEST);
-                bubble.add(timeLabel, BorderLayout.EAST);
-            }
-
-            bubble.setPreferredSize(new Dimension(scrollPane.getWidth()-20, 60));
-            bubble.setMaximumSize(new Dimension(scrollPane.getWidth()-20, 60));
-
-            messagePanel.add(bubble);
-            messagePanel.add(Box.createVerticalStrut(10));
-
-            revalidate();
-            repaint();
-
-            // 레이아웃 갱신 후 스크롤바를 하단으로 이동
-            SwingUtilities.invokeLater(() -> {
-                JScrollBar vertical = scrollPane.getVerticalScrollBar();
-                vertical.setValue(vertical.getMaximum());
-            });
+        translateButton.addActionListener(e -> {
+            String translatedText = callTranslateAPI(message.getContent());
+            JOptionPane.showMessageDialog(null, "Translated Text:\n" + translatedText);
         });
+
+        // 텍스트 줄바꿈 기준
+        int textWrapWidth = 150; // 텍스트 줄바꿈 기준을 더 작게 설정
+        int maxWidth = 220;      // 메시지 박스의 최대 너비
+        JLabel messageLabel = new JLabel("<html><p style=\"width: " + textWrapWidth + "px;\">" + message.getContent() + "</p></html>");
+        messageLabel.setOpaque(true);
+        messageLabel.setBackground(message.getUserId().equals(user.getId()) ? new Color(255, 255, 204) : Color.WHITE);
+        messageLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        // 메시지 길이에 따라 높이 계산
+        FontMetrics metrics = messageLabel.getFontMetrics(messageLabel.getFont());
+        int textWidth = metrics.stringWidth(message.getContent());
+        int lineHeight = metrics.getHeight();
+        int lineCount = (int) Math.ceil((double) textWidth / textWrapWidth); // 텍스트가 몇 줄인지 계산
+        int bubbleHeight = lineHeight * lineCount + 10; // 줄 수에 따라 높이 조정
+
+        // 메시지 박스 크기 계산 (비율 고정)
+        double ratio = 0.7; // 텍스트 길이에 따른 메시지 박스 크기의 비율
+        int bubbleWidth = Math.min(maxWidth, (int) (textWidth * ratio) + 50); // 비율로 크기 조정
+        bubbleWidth = Math.max(20, bubbleWidth); // 최소 크기 100 유지
+
+        // 메시지 레이블 크기 설정
+        messageLabel.setPreferredSize(new Dimension(bubbleWidth, bubbleHeight));
+        messageLabel.setMaximumSize(new Dimension(maxWidth, Integer.MAX_VALUE));
+
+        // 메시지와 아이콘 배치
+        if (message.getUserId().equals(user.getId())) {
+            // 내가 쓴 메시지: 아이콘이 왼쪽, 메시지가 오른쪽
+            bubble.add(Box.createHorizontalGlue()); // 오른쪽 기준으로 정렬
+            bubble.add(translateButton);            // 왼쪽에 아이콘
+            bubble.add(Box.createRigidArea(new Dimension(5, 0)));
+            bubble.add(messageLabel);               // 오른쪽에 메시지
+        } else {
+            // 상대방 메시지: 메시지가 왼쪽, 아이콘이 오른쪽
+            bubble.add(messageLabel);               // 왼쪽에 메시지
+            bubble.add(Box.createRigidArea(new Dimension(5, 0)));
+            bubble.add(translateButton);            // 오른쪽에 아이콘
+            bubble.add(Box.createHorizontalGlue()); // 왼쪽 기준으로 정렬
+        }
+
+        bubble.setAlignmentX(Component.LEFT_ALIGNMENT);
+        messagePanel.add(bubble);
+        messagePanel.add(Box.createVerticalStrut(10));
+
+        // 레이아웃 갱신
+        revalidate();
+        repaint();
+
+        // 스크롤바를 가장 아래로 이동
+        SwingUtilities.invokeLater(() -> {
+            JScrollBar vertical = scrollPane.getVerticalScrollBar();
+            vertical.setValue(vertical.getMaximum());
+        });
+    }
+    // 번역 API 호출 메서드 (예시)
+    private String callTranslateAPI(String text) {
+        // 번역 API를 호출하는 로직 구현 (HTTP 요청 등)
+        // 예시로 "번역된 텍스트" 반환
+        return "번역된 텍스트";
     }
 
     static class JsonMessage {
