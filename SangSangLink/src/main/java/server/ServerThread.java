@@ -1,5 +1,6 @@
 package server;
 
+import chat.ChatGraphicScreen;
 import com.google.gson.Gson;
 import db.UserDB;
 import model.ChatRoom;
@@ -49,12 +50,21 @@ class ServerThread extends Thread {
                 // TODO ServerManager.list에 이미 userid, chatroomid를 동시에 만족하는 스레드가 있는지 체크 후 종료
                 // 최초 접속 시 userId, chatRoomId 설정
                 if (this.userId == null && this.chatRoomId == null) {
+                    ServerManager.list.removeIf(chatRoomThread -> {
+                        if (chatRoomThread.getUserId().equals(jsonMessage.userId) &&
+                                chatRoomThread.getChatRoomId().equals(jsonMessage.chatRoomId)) {
+                            // 기존 스레드 종료
+                            // 클라이언트에 연결 종료 요청
+                            chatRoomThread.getServerThread().stopThread(); // stopThread()는 종료 메서드
+                            return true; // 제거 대상
+                        }
+                        return false; // 유지 대상
+                    });
+
                     this.userId = jsonMessage.userId;
                     this.chatRoomId = jsonMessage.chatRoomId;
 
-                    ServerManager.list.add(new ChatRoomThread(chatRoomId, this));
-                    System.out.println("서버매니저 채팅방 리스트체크"+ServerManager.list);
-                    //os.writeUTF("채팅방 " + chatRoomId +"에 "+userId+"가 입장했습니다.");
+                    ServerManager.list.add(new ChatRoomThread(userId, chatRoomId, this));
                 } else {
                     // 이후부터는 메시지 전송
                     sendMessageToChatRoom(receivedJson);
@@ -83,6 +93,22 @@ class ServerThread extends Thread {
             }
         }
     }
+    // 소켓 통신 중단 처리
+    public void stopThread() {
+        try {
+            // 클라이언트 소켓 스레드에 통신 중단 요청
+            String stopMessage=createJsonMessage(userId, chatRoomId, "/stop");
+            os.writeUTF(stopMessage);
+
+            // 리소스 정리
+            if (is != null) is.close();
+            if (os != null) os.close();
+            if (s != null) s.close();
+            System.out.println("Thread stopped for userId: " + userId + ", chatRoomId: " + chatRoomId);
+        } catch (IOException e) {
+            System.err.println("Error while stopping thread: " + e.getMessage());
+        }
+    }
 
     // JSON 메시지 클래스
     private static class JsonMessage {
@@ -90,7 +116,17 @@ class ServerThread extends Thread {
         Long userId;
         String message;
 
-        public JsonMessage() {}
+        public JsonMessage(Long userId, Long chatRoomId, String message) {
+            this.userId = userId;
+            this.chatRoomId = chatRoomId;
+            this.message = message;
+        }
+    }
+
+    // JSON 메시지 생성
+    private String createJsonMessage(Long userId, Long chatRoomId, String message) {
+      JsonMessage jsonMessage = new JsonMessage(userId, chatRoomId, message);
+        return gson.toJson(jsonMessage);
     }
 }
 

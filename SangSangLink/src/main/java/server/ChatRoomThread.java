@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ChatRoomThread {
+    private Long userId;
 
     private Long chatRoomId;
 
