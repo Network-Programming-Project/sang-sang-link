@@ -16,10 +16,15 @@ public class User {
     private String userName;
     private String password;
     private String port;
+    private String statusMessage; // 상태 메시지 필드 추가
     private List<User> friends;
     private volatile List<ChatRoom> chatRooms;
 
+    // 채팅방 추가 메서드
     public void addChatRoom(ChatRoom chatRoom) {
+        if (chatRooms == null) {
+            chatRooms = new ArrayList<>();
+        }
         chatRooms.add(chatRoom);
     }
 
@@ -30,8 +35,9 @@ public class User {
                 ", email='" + email + '\'' +
                 ", userName='" + userName + '\'' +
                 ", port=" + port +
-                ", friends=" + friends.stream().map(User::getId).toList() + // 친구의 ID만 출력
-                ", chatRooms=" + chatRooms.stream().map(ChatRoom::getId).toList() + // 채팅방의 ID만 출력
+                ", statusMessage='" + statusMessage + '\'' + // 상태 메시지 추가
+                ", friends=" + (friends != null ? friends.stream().map(User::getId).toList() : "[]") + // 친구의 ID만 출력
+                ", chatRooms=" + (chatRooms != null ? chatRooms.stream().map(ChatRoom::getId).toList() : "[]") + // 채팅방의 ID만 출력
                 '}';
     }
 }

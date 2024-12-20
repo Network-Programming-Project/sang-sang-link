@@ -42,12 +42,26 @@ public class UserDB {
         insert(user1);
         insert(user2);
         insert(user3);
+
+        // 친구 관계 동기화
+        syncFriendRelationships(user1, user2);
+        syncFriendRelationships(user1, user3);
     }
 
     // 데이터베이스에 저장
     public static void insert(User user) {
         user.setId(autoIncrement++);
         users.add(user);
+    }
+
+    // 친구 관계 동기화 메서드
+    public static void syncFriendRelationships(User user1, User user2) {
+        if (!user1.getFriends().contains(user2)) {
+            user1.getFriends().add(user2);
+        }
+        if (!user2.getFriends().contains(user1)) {
+            user2.getFriends().add(user1);
+        }
     }
 
     public static User getUser(String userName) {
