@@ -9,18 +9,18 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+// TODO 작성한 텍스트가 한국어인지 영어인지 분별해서 저장하는 코드 추가 필요
 public class ChatRoomMessage { // ChatRoom과 User의 매핑 테이블
     private Long id;
 
-    // 메시지 내용
     private String content;
 
-    // 메시지 보낸 시간
     private LocalDateTime sendAt;
 
-    // 메시지 보낸 사용자 식별
     private Long userId;
 
-    // 속해있는 채팅방
     private Long chatRoomId;
+
+    // KO or EN-US
+    private String language;
 }
