@@ -2,10 +2,11 @@ package chat;
 
 import com.google.gson.Gson;
 import db.ChatMessageDB;
-import db.ChatRoomDB;
 import model.ChatRoom;
 import model.ChatRoomMessage;
 import model.User;
+import translation.TranslationResponse;
+import translation.TranslationService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -35,6 +36,8 @@ public class ChatGraphicScreen extends JPanel {
     private Socket socket;
     private DataInputStream dis;
     private DataOutputStream dos;
+
+    private TranslationService translationService=TranslationService.getInstance();
 
 
     public ChatGraphicScreen(ChatRoom chatRoom, User user) {
@@ -156,15 +159,10 @@ public class ChatGraphicScreen extends JPanel {
         translateButton.setBorder(BorderFactory.createEmptyBorder());
         translateButton.setContentAreaFilled(false);
 
-        translateButton.addActionListener(e -> {
-            String translatedText = callTranslateAPI(message.getContent());
-            JOptionPane.showMessageDialog(null, "Translated Text:\n" + translatedText);
-        });
-
         // 텍스트 줄바꿈 기준
         int textWrapWidth = 150; // 텍스트 줄바꿈 기준을 더 작게 설정
         int maxWidth = 220;      // 메시지 박스의 최대 너비
-        JLabel messageLabel = new JLabel("<html><p style=\"width: " + textWrapWidth + "px;\">" + message.getContent() + "</p></html>");
+        final JLabel messageLabel = new JLabel("<html><p style=\"width: " + textWrapWidth + "px;\">" + message.getContent() + "</p></html>");
         messageLabel.setOpaque(true);
         messageLabel.setBackground(message.getUserId().equals(user.getId()) ? new Color(255, 255, 204) : Color.WHITE);
         messageLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
@@ -184,6 +182,23 @@ public class ChatGraphicScreen extends JPanel {
         // 메시지 레이블 크기 설정
         messageLabel.setPreferredSize(new Dimension(bubbleWidth, bubbleHeight));
         messageLabel.setMaximumSize(new Dimension(maxWidth, Integer.MAX_VALUE));
+
+        // 번역 아이콘 버튼 액션
+        translateButton.addActionListener(e -> {
+            String translatedText = null;
+            try {
+                translatedText = callTranslateAPI(message.getContent(), message.getLanguage());
+                message.setContent(translatedText);
+                message.determineLanguage();
+
+                // 메시지 레이블 업데이트
+                messageLabel.setText("<html><p style=\"width: " + textWrapWidth + "px;\">" + translatedText + "</p></html>");
+                messageLabel.revalidate();
+                messageLabel.repaint();
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+        });
 
         // 메시지와 아이콘 배치
         if (message.getUserId().equals(user.getId())) {
@@ -215,10 +230,12 @@ public class ChatGraphicScreen extends JPanel {
         });
     }
     // 번역 API 호출 메서드 (예시)
-    private String callTranslateAPI(String text) {
+    private String callTranslateAPI(String text, String language) throws IOException {
         // 번역 API를 호출하는 로직 구현 (HTTP 요청 등)
         // 예시로 "번역된 텍스트" 반환
-        return "번역된 텍스트";
+        TranslationResponse translate = translationService.translate(text, language);
+        String translatedText=translate.getTranslations().getFirst().getText();
+        return translatedText;
     }
 
     static class JsonMessage {
@@ -247,13 +264,15 @@ public class ChatGraphicScreen extends JPanel {
                         break;
                     }
                     // ChatRoomMessage 생성
-                    ChatRoomMessage chatRoomMessage = new ChatRoomMessage(
-                            null,
-                            received.message,
-                            LocalDateTime.now(),
-                            received.userId,
-                            received.chatRoomId
-                    );
+                    // TODO 한국어인지 영어인지 분별
+                    ChatRoomMessage chatRoomMessage = ChatRoomMessage.builder()
+                            .content(received.message)
+                            .chatRoomId(received.chatRoomId)
+                            .userId(received.userId)
+                            .sendAt(LocalDateTime.now())
+                            .build()
+                            ;
+
                     System.out.println("chatRoomIncrement"+ ChatMessageDB.autoIncrement);
                     ChatMessageDB.insert(chatRoomMessage);
                     System.out.println("ChatScreen 클라이언트 insert 후"+chatRoomMessage);

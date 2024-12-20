@@ -10,7 +10,6 @@ import java.awt.event.*;
 import java.io.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.net.Socket;
-import java.util.List;
 
 public class ChatScreen extends JPanel {
     private JTextArea textArea;
