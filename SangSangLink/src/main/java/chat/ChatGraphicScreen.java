@@ -189,7 +189,7 @@ public class ChatGraphicScreen extends JPanel {
             try {
                 translatedText = callTranslateAPI(message.getContent(), message.getLanguage());
                 message.setContent(translatedText);
-                message.setLanguage("KO");
+                message.determineLanguage();
 
                 // 메시지 레이블 업데이트
                 messageLabel.setText("<html><p style=\"width: " + textWrapWidth + "px;\">" + translatedText + "</p></html>");

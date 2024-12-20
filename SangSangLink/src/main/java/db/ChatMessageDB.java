@@ -41,7 +41,7 @@ public class ChatMessageDB {
                 .content("네번째 내용")
                 .chatRoomId(0L)
                 .userId(1L)
-                .language("KO")
+                .language("EN-US")
                 .build()
                 ;
         insert(chatRoomMessage4);
@@ -50,7 +50,7 @@ public class ChatMessageDB {
                 .content("다번째 내용 다번째 내용 다번째 내용 다번째 내용")
                 .chatRoomId(0L)
                 .userId(1L)
-                .language("KO")
+                .language("EN-US")
                 .build()
                 ;
         insert(chatRoomMessage5);
@@ -59,13 +59,13 @@ public class ChatMessageDB {
                 .content("여섯번째 내용")
                 .chatRoomId(0L)
                 .userId(1L)
-                .language("KO")
+                .language("EN-US")
                 .build()
                 ;
         insert(chatRoomMessage6);
 
         ChatRoomMessage chatRoomMessage7 = ChatRoomMessage.builder()
-                .content("일곱번째 내용")
+                .content("hello my friend")
                 .chatRoomId(0L)
                 .userId(1L)
                 .language("KO")
