@@ -219,7 +219,9 @@ public class ChatGraphicScreen extends JPanel {
                             received.userId,
                             received.chatRoomId
                     );
+                    System.out.println("chatRoomIncrement"+ ChatMessageDB.autoIncrement);
                     ChatMessageDB.insert(chatRoomMessage);
+                    System.out.println("ChatScreen 클라이언트 insert 후"+chatRoomMessage);
 
                     // UI 업데이트는 EDT에서 처리
                     SwingUtilities.invokeLater(() -> addMessageBubble(chatRoomMessage));

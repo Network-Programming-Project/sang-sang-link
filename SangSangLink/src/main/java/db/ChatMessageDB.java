@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ChatMessageDB {
     private static List<ChatRoomMessage> messages = new ArrayList<>();
-    private static Long autoIncrement=0L;
+    public static Long autoIncrement=0L;
 
     static{
         ChatRoomMessage chatRoomMessage1 = ChatRoomMessage.builder()
@@ -68,7 +68,16 @@ public class ChatMessageDB {
     }
 
     public static void insert(ChatRoomMessage message) {
+
         message.setId(autoIncrement++);
+        // 중복 메시지 확인: chatRoomId와 content가 모두 같은 경우
+        for (ChatRoomMessage chatRoomMessage : messages) {
+            if (chatRoomMessage.getChatRoomId().equals(message.getChatRoomId()) &&
+                    chatRoomMessage.getContent().equals(message.getContent()) &&
+                    chatRoomMessage.getUserId().equals(message.getUserId())) {
+                return; // 중복 메시지이면 추가하지 않음
+            }
+        }
         messages.add(message);
     }
 
