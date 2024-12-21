@@ -36,9 +36,8 @@ public class MainScreen extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 400, 500);
 
-        contentPane = new JPanel(null); // null 레이아웃
-//        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        contentPane.setBackground(new Color(100, 175, 250)); // 배경색 설정
+        contentPane = new JPanel(null);
+        contentPane.setBackground(new Color(100, 175, 250));
         setContentPane(contentPane);
 
         // 사이드 메뉴
@@ -49,7 +48,7 @@ public class MainScreen extends JFrame {
         // 가운데 패널
         centerPanel = new JPanel(null);
         centerPanel.setBounds(50, 0, 350, 500);
-        contentPane.setBackground(new Color(100, 175, 100)); // 배경색 설정 원래값 b 250
+        contentPane.setBackground(new Color(100, 250, 100));
         contentPane.add(centerPanel);
 
         // 패널들 초기화
@@ -63,11 +62,6 @@ public class MainScreen extends JFrame {
         centerPanel.add(chatListScreen);
         chatListScreen.setVisible(false);
 
-        chatAddScreen = new ChatAddScreen();
-        chatAddScreen.setBounds(0,0,350,500);
-        centerPanel.add(chatAddScreen);
-        chatAddScreen.setVisible(false);
-
         // 이벤트 연결
         sideMenu.setProfileClickListener(e -> {
             showPanel(profilePanel);
@@ -78,7 +72,8 @@ public class MainScreen extends JFrame {
         });
 
         sideMenu.setChatAddClickListener(e->{
-            showPanel(chatAddScreen);
+//            showPanel(chatAddScreen);
+            System.out.println("공지사항 Screen 추가예정");
         });
     }
 
@@ -97,17 +92,8 @@ public class MainScreen extends JFrame {
         centerPanel.repaint();
     }
 
+    // 하위 컴포넌트에서 centerPanel 의 스위칭이 필요할 때
     public void showChatScreen(ChatRoom chatRoom, User user) {
-
-//        // centerPanel 내 다른 패널 숨기고 chatScreen 보여주기
-//        // ChatScreen은 필요할 때 생성 또는 재사용 가능
-//        chatScreen = new ChatScreen(chatRoom, user);
-//        chatScreen.setBounds(0,0,320,500);
-//        centerPanel.add(chatScreen);
-//        chatScreen.setVisible(false);
-//
-//        showPanel(chatScreen);
-
         chatGraphicScreen = new ChatGraphicScreen(chatRoom, user);
         chatGraphicScreen.setBounds(0,0,350,500);
         chatGraphicScreen.setBackground(new Color(100, 175, 250));
@@ -115,6 +101,14 @@ public class MainScreen extends JFrame {
         chatGraphicScreen.setVisible(false);
 
         showPanel(chatGraphicScreen);
+    }
+
+    public void showChatAddScreen(){
+        chatAddScreen = new ChatAddScreen(user);
+        chatAddScreen.setBounds(0,0,350,500);
+        centerPanel.add(chatAddScreen);
+        chatAddScreen.setVisible(false);
+        showPanel(chatAddScreen);
     }
 }
 

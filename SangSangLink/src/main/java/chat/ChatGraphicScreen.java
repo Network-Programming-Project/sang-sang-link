@@ -53,7 +53,6 @@ public class ChatGraphicScreen extends JPanel {
 
         this.user=user;
         this.ipAddr = "127.0.0.1";
-        // TODO 포트넘버 로직 추가 예정 고정으로 가야할듯
         this.portNo = "50001";
         this.chatRoom=chatRoom;
 

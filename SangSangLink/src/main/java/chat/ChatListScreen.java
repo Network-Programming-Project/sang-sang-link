@@ -39,17 +39,25 @@ public class ChatListScreen extends JPanel {
         roomListPanel.setLayout(new BoxLayout(roomListPanel, BoxLayout.Y_AXIS));
         roomListPanel.setBackground(new Color(100, 175, 250)); // 배경
 
+        // + 아이콘 버튼 (아바타 옆에 추가)
+        JButton btnAdd = new JButton("+");
+        btnAdd.setFont(new Font("Arial", Font.BOLD, 16));
+        btnAdd.setBounds(250, 350, 45, 45);
+        btnAdd.setFocusPainted(false);
+        btnAdd.setBackground(new Color(255, 255, 255));
+        btnAdd.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnAdd.addActionListener(e -> {
+            showChatAddScreen();
+        });
+        add(btnAdd);
+
         scrollPane = new JScrollPane(roomListPanel);
-        scrollPane.setBounds(0, 40, 350, 380);
+        scrollPane.setBounds(0, 60, 350, 380);
         scrollPane.setBorder(null); // 스크롤팬 테두리 제거
         add(scrollPane);
 
         // ChatRoomDB로부터 채팅방 목록 가져오기
-        List<ChatRoom> chatRooms = ChatRoomDB.getChatRoomsByUserId(Session.getUser().getId());
-        System.out.println("chatRoomList 채팅방 목록 가져오기 사용자 id"+Session.getUser().getId());
-
-        System.out.println("chatRoomList 개인 사용자 채팅방"+chatRooms);
-        System.out.println("chatRoomList 모든 사용자 정보 가져오기: "+ UserDB.users);
+        List<ChatRoom> chatRooms = ChatRoomDB.getChatRoomsByUserId(user.getId());
 
         // 채팅방 패널 생성 및 추가
         for (ChatRoom room : chatRooms) {
@@ -111,6 +119,13 @@ public class ChatListScreen extends JPanel {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         if (frame instanceof MainScreen mainScreen) {
             mainScreen.showChatScreen(room, user);
+        }
+    }
+
+    private void showChatAddScreen(){
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        if (frame instanceof MainScreen mainScreen) {
+            mainScreen.showChatAddScreen();
         }
     }
 
