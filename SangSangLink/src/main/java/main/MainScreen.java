@@ -110,5 +110,16 @@ public class MainScreen extends JFrame {
         chatAddScreen.setVisible(false);
         showPanel(chatAddScreen);
     }
+
+    public void addChatRoomChatListScreen(ChatRoom chatRoom) {
+        chatListScreen.createRoomItem(chatRoom);
+    }
+
+    public void showChatListScreen(){
+        chatListScreen.initialization();
+        chatListScreen.revalidate();
+        chatListScreen.repaint();
+        showPanel(chatListScreen);
+    }
 }
 

@@ -1,6 +1,7 @@
 package chat;
 
 import db.ChatRoomDB;
+import main.MainScreen;
 import model.ChatRoom;
 import model.User;
 import session.Session;
@@ -81,6 +82,14 @@ public class ChatAddScreen extends JPanel {
 
             ChatRoomDB.insert(chatRoom);
             System.out.println(chatRoom + " 채팅방이 생성되었습니다.");
+
+            addChatRoomChatListScreen(chatRoom);
+
+            // ChatListScreen으로 화면 전환
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            if (frame instanceof MainScreen mainScreen) {
+                mainScreen.showChatListScreen();
+            }
         });
         add(createButton);
     }
@@ -128,6 +137,13 @@ public class ChatAddScreen extends JPanel {
 
     public String getRoomName() {
         return roomNameField.getText().trim();
+    }
+
+    private void addChatRoomChatListScreen(ChatRoom chatRoom){
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        if (frame instanceof MainScreen mainScreen) {
+            mainScreen.addChatRoomChatListScreen(chatRoom);
+        }
     }
 
 }

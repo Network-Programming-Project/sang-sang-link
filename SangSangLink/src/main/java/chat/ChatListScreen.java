@@ -29,7 +29,9 @@ public class ChatListScreen extends JPanel {
         initialization();
     }
 
-    private void initialization() {
+    public void initialization() {
+        System.out.println("Initializing ChatListScreen");
+
         roomListLabel = new JLabel("채팅방 리스트", SwingConstants.CENTER);
         roomListLabel.setFont(new Font("Arial", Font.BOLD, 18));
         roomListLabel.setBounds(0,10, 350, 30);
@@ -58,6 +60,7 @@ public class ChatListScreen extends JPanel {
 
         // ChatRoomDB로부터 채팅방 목록 가져오기
         List<ChatRoom> chatRooms = ChatRoomDB.getChatRoomsByUserId(user.getId());
+        System.out.println("ChatListScreen 채팅방 목록 가져오기"+chatRooms);
 
         // 채팅방 패널 생성 및 추가
         for (ChatRoom room : chatRooms) {
@@ -70,7 +73,7 @@ public class ChatListScreen extends JPanel {
         roomListPanel.repaint();
     }
 
-    private JPanel createRoomItem(ChatRoom room) {
+    public JPanel createRoomItem(ChatRoom room) {
         JPanel roomPanel = new JPanel();
         roomPanel.setLayout(new BorderLayout());
         roomPanel.setOpaque(true);
@@ -109,8 +112,12 @@ public class ChatListScreen extends JPanel {
             }
         });
 
-        // 구분선 대신 공간 주기 위해 빈 패널을 아래에 추가할 수도 있음
-        // roomListPanel에 setBoxLayout을 썼으니 각 패널 사이 간격 부여 가능
+        roomListPanel.revalidate();
+        roomListPanel.repaint();
+
+        scrollPane.revalidate();
+        scrollPane.repaint();
+
         return roomPanel;
     }
 
@@ -128,7 +135,6 @@ public class ChatListScreen extends JPanel {
             mainScreen.showChatAddScreen();
         }
     }
-
 }
 
 
