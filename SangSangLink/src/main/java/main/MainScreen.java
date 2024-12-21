@@ -99,8 +99,8 @@ public class MainScreen extends JFrame {
 
     public void showChatScreen(ChatRoom chatRoom, User user) {
 
-        // centerPanel 내 다른 패널 숨기고 chatScreen 보여주기
-        // ChatScreen은 필요할 때 생성 또는 재사용 가능
+//        // centerPanel 내 다른 패널 숨기고 chatScreen 보여주기
+//        // ChatScreen은 필요할 때 생성 또는 재사용 가능
 //        chatScreen = new ChatScreen(chatRoom, user);
 //        chatScreen.setBounds(0,0,320,500);
 //        centerPanel.add(chatScreen);

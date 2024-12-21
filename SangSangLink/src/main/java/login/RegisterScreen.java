@@ -94,7 +94,7 @@ public class RegisterScreen extends JFrame {
             }
 
             // 포트 번호는 고정값 5001로 설정
-            String port = "5001";
+            String port = "50001";
 
             User newUser = User.builder()
                     .email(email)

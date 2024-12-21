@@ -37,7 +37,19 @@ public class ChatRoomMessage { // ChatRoom과 User의 매핑 테이블
         } else if (isEnglish(content)) {
             this.language = "KO";
         } else {
-            this.language = "UNKNOWN"; // 알 수 없는 언어
+            // content의 첫 글자를 기반으로 언어 설정
+            if (content != null && !content.isEmpty()) {
+                char firstChar = content.charAt(0); // 첫 글자 가져오기
+                if (Character.toString(firstChar).matches("[a-zA-Z]")) { // 영어인지 확인
+                    this.language = "KO";
+                } else if (Character.toString(firstChar).matches("[가-힣]")) { // 한글인지 확인
+                    this.language = "EN-US";
+                } else {
+                    this.language = "UNKNOWN"; // 첫 글자가 영어/한글이 아니면 UNKNOWN
+                }
+            } else {
+                this.language = "UNKNOWN"; // content가 비어 있거나 null인 경우
+            }
         }
     }
 

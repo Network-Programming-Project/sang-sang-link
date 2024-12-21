@@ -11,11 +11,13 @@ import translation.TranslationService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.time.LocalDateTime;
@@ -26,6 +28,8 @@ public class ChatGraphicScreen extends JPanel {
     private JPanel messagePanel;
     private JTextField txtInput;
     private JButton btnSend;
+    private JButton btnEmoticon;
+    private JButton btnAttach;
     private JScrollPane scrollPane;
     private JLabel roomTitle;
     private String ipAddr;
@@ -33,6 +37,9 @@ public class ChatGraphicScreen extends JPanel {
     private User user;
     private ChatRoom chatRoom;
     private Gson gson = new Gson();
+
+    // 이모티콘 패널
+    private JDialog emoticonDialog;
 
     // 소켓
     private Socket socket;
@@ -73,9 +80,17 @@ public class ChatGraphicScreen extends JPanel {
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane);
 
+        btnEmoticon = new JButton("😊");
+        btnEmoticon.setBounds(5, 420, 40, 40);
+        add(btnEmoticon);
+
+        btnAttach = new JButton("사진");
+        btnAttach.setBounds(50, 420, 40, 40);
+        add(btnAttach);
+
         // 입력 필드
         txtInput = new JTextField();
-        txtInput.setBounds(0, 420, 290, 40);
+        txtInput.setBounds(100, 420, 190, 40);
         add(txtInput);
 
         // 전송 버튼
@@ -91,6 +106,32 @@ public class ChatGraphicScreen extends JPanel {
                 String msg = txtInput.getText();
                 sendMessage(user.getId(), chatRoom.getId(), msg);
                 txtInput.setText("");
+            }
+        });
+
+        // 이모티콘 버튼 액션
+        btnEmoticon.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 이모티콘 다이얼로그 띄우기
+                showEmoticonDialog();
+            }
+        });
+
+        // 사진 버튼 액션
+        btnAttach.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 사진 파일 선택
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Image Files", "jpg", "png", "gif"));
+                int returnValue = fileChooser.showOpenDialog(null);
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    String imagePath = selectedFile.getAbsolutePath();
+                    // 선택된 이미지를 전송 (파일 전송 로직 필요)
+                    sendMessage(user.getId(), chatRoom.getId(), "사진: " + imagePath);
+                }
             }
         });
 
@@ -154,15 +195,6 @@ public class ChatGraphicScreen extends JPanel {
         String userName = UserDB.getUserById(message.getUserId()).getUserName();
         JLabel userNameLabel = new JLabel(userName);
         userNameLabel.setFont(new Font("Arial", Font.BOLD, 12)); // 사용자 이름 스타일 지정
-
-        // 사용자 이름 위치에 따라 정렬 설정
-        if (message.getUserId().equals(user.getId())) {
-            userNameLabel.setHorizontalAlignment(SwingConstants.RIGHT); // 상대 메시지: 왼쪽 정렬
-        } else {
-            userNameLabel.setHorizontalAlignment(SwingConstants.LEFT); // 상대 메시지: 왼쪽 정렬
-        }
-
-        userNameLabel.setBorder(new EmptyBorder(0, 0, 5, 0)); // 사용자 이름과 메시지 사이 여백 설정
 
         // 메시지 버블 생성
         JPanel bubble = new JPanel();
@@ -230,22 +262,20 @@ public class ChatGraphicScreen extends JPanel {
             bubble.add(translateButton);            // 왼쪽에 아이콘
             bubble.add(Box.createRigidArea(new Dimension(5, 0)));
             bubble.add(messageLabel);               // 오른쪽에 메시지
+            bubble.add(Box.createRigidArea(new Dimension(5, 0)));
+            bubble.add(userNameLabel);
         } else {
             // 상대방 메시지: 메시지가 왼쪽, 아이콘이 오른쪽
+            bubble.add(userNameLabel);
+            bubble.add(Box.createRigidArea(new Dimension(5, 0)));
             bubble.add(messageLabel);               // 왼쪽에 메시지
             bubble.add(Box.createRigidArea(new Dimension(5, 0)));
             bubble.add(translateButton);            // 오른쪽에 아이콘
             bubble.add(Box.createHorizontalGlue()); // 왼쪽 기준으로 정렬
         }
 
-        // 사용자 이름과 메시지 버블을 감싸는 패널 생성
-        JPanel container = new JPanel();
-        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        container.add(userNameLabel); // 사용자 이름 추가
-        container.add(bubble);        // 메시지 버블 추가
-
         // 메시지 패널에 추가
-        messagePanel.add(container);
+        messagePanel.add(bubble);
         messagePanel.add(Box.createVerticalStrut(5)); // 메시지 간 간격 추가
 
         revalidate();
@@ -315,5 +345,30 @@ public class ChatGraphicScreen extends JPanel {
                 }
             }
         }
+    }
+    private void showEmoticonDialog() {
+        // 이모티콘 선택을 위한 다이얼로그 생성
+        emoticonDialog = new JDialog();
+        emoticonDialog.setTitle("이모티콘 선택");
+        emoticonDialog.setLayout(new GridLayout(3, 3));
+        emoticonDialog.setSize(200, 200);
+        emoticonDialog.setLocationRelativeTo(null);
+
+        // 이모티콘 버튼들 생성
+        String[] emoticons = { "😊", "😂", "😢", "😍", "😎", "😡", "😜", "😇", "😱" };
+        for (String emoticon : emoticons) {
+            JButton emoticonButton = new JButton(emoticon);
+            emoticonButton.setFont(new Font("Arial", Font.PLAIN, 30));
+            emoticonButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // 이모티콘 클릭 시 텍스트 필드에 이모티콘 추가
+                    txtInput.setText(txtInput.getText() + emoticon);
+                    emoticonDialog.dispose(); // 다이얼로그 닫기
+                }
+            });
+            emoticonDialog.add(emoticonButton);
+        }
+        emoticonDialog.setVisible(true);
     }
 }
