@@ -16,13 +16,13 @@ import java.util.List;
 public class ChatListScreen extends JPanel {
     private JScrollPane scrollPane;
     private JPanel roomListPanel; // 실제 채팅방 목록이 들어갈 패널
+    private JLabel roomListLabel;
     private User user;
 
     public ChatListScreen(User user) {
         this.user = user;
         // 패널 기본 설정
         setLayout(null);
-        setBounds(60, 0, 320, 500);
         setVisible(false);
         setBackground(new Color(100, 175, 250));
 
@@ -30,13 +30,17 @@ public class ChatListScreen extends JPanel {
     }
 
     private void initialization() {
+        roomListLabel = new JLabel("채팅방 리스트", SwingConstants.CENTER);
+        roomListLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        roomListLabel.setBounds(0,10, 350, 30);
+        add(roomListLabel);
         // 채팅방 목록을 담을 패널 (스크롤 가능)
         roomListPanel = new JPanel();
         roomListPanel.setLayout(new BoxLayout(roomListPanel, BoxLayout.Y_AXIS));
         roomListPanel.setBackground(new Color(100, 175, 250)); // 배경
 
         scrollPane = new JScrollPane(roomListPanel);
-        scrollPane.setBounds(10, 10, 300, 380);
+        scrollPane.setBounds(0, 40, 350, 380);
         scrollPane.setBorder(null); // 스크롤팬 테두리 제거
         add(scrollPane);
 
@@ -65,7 +69,7 @@ public class ChatListScreen extends JPanel {
         roomPanel.setBackground(Color.WHITE); // 배경 흰색
 
         // 패널 사이즈 고정
-        Dimension fixedSize = new Dimension(280, 50);
+        Dimension fixedSize = new Dimension(350, 50);
         roomPanel.setPreferredSize(fixedSize);
         roomPanel.setMaximumSize(fixedSize);
         roomPanel.setMinimumSize(fixedSize);

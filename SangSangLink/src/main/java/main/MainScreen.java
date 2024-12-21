@@ -37,7 +37,7 @@ public class MainScreen extends JFrame {
         setBounds(100, 100, 400, 500);
 
         contentPane = new JPanel(null); // null 레이아웃
-        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+//        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setBackground(new Color(100, 175, 250)); // 배경색 설정
         setContentPane(contentPane);
 
@@ -48,23 +48,23 @@ public class MainScreen extends JFrame {
 
         // 가운데 패널
         centerPanel = new JPanel(null);
-        centerPanel.setBounds(60, 0, 320, 500);
-        contentPane.setBackground(new Color(100, 175, 250)); // 배경색 설정
+        centerPanel.setBounds(50, 0, 350, 500);
+        contentPane.setBackground(new Color(100, 175, 100)); // 배경색 설정 원래값 b 250
         contentPane.add(centerPanel);
 
         // 패널들 초기화
         profilePanel = new ProfilePanel(getCurrentTime());
-        profilePanel.setBounds(0, 0, 320, 500);
+        profilePanel.setBounds(0, 0, 350, 500);
         profilePanel.setVisible(true);
         centerPanel.add(profilePanel);
 
         chatListScreen = new ChatListScreen(user);
-        chatListScreen.setBounds(0,0,320,500);
+        chatListScreen.setBounds(0,0,350,500);
         centerPanel.add(chatListScreen);
         chatListScreen.setVisible(false);
 
         chatAddScreen = new ChatAddScreen();
-        chatAddScreen.setBounds(0,0,320,500);
+        chatAddScreen.setBounds(0,0,350,500);
         centerPanel.add(chatAddScreen);
         chatAddScreen.setVisible(false);
 
@@ -109,7 +109,8 @@ public class MainScreen extends JFrame {
 //        showPanel(chatScreen);
 
         chatGraphicScreen = new ChatGraphicScreen(chatRoom, user);
-        chatGraphicScreen.setBounds(0,0,320,500);
+        chatGraphicScreen.setBounds(0,0,350,500);
+        chatGraphicScreen.setBackground(new Color(100, 175, 250));
         centerPanel.add(chatGraphicScreen);
         chatGraphicScreen.setVisible(false);
 

@@ -70,7 +70,7 @@ public class ProfilePanel extends JPanel {
         friendList = new JList<>(friendListModel);
         friendList.setFont(new Font("Arial", Font.PLAIN, 12));
         friendScrollPane = new JScrollPane(friendList);
-        friendScrollPane.setBounds(20, 160, 360, 280);
+        friendScrollPane.setBounds(20, 160, 310, 280);
         add(friendScrollPane);
 
         // 초기 친구 목록 로드

@@ -2,6 +2,7 @@ package chat;
 
 import com.google.gson.Gson;
 import db.ChatMessageDB;
+import db.UserDB;
 import model.ChatRoom;
 import model.ChatRoomMessage;
 import model.User;
@@ -26,6 +27,7 @@ public class ChatGraphicScreen extends JPanel {
     private JTextField txtInput;
     private JButton btnSend;
     private JScrollPane scrollPane;
+    private JLabel roomTitle;
     private String ipAddr;
     private String portNo;
     private User user;
@@ -49,7 +51,6 @@ public class ChatGraphicScreen extends JPanel {
         this.chatRoom=chatRoom;
 
         setLayout(null);
-        setBounds(60, 0, 320, 500);
         setVisible(false); // 기본적으로 숨김 상태
 
         // 컴포넌트 초기화
@@ -61,21 +62,25 @@ public class ChatGraphicScreen extends JPanel {
         messagePanel = new JPanel();
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
 
+        roomTitle = new JLabel(chatRoom.getTitle()+"채팅방", SwingConstants.CENTER);
+        roomTitle.setFont(new Font("Arial", Font.BOLD, 18));
+        roomTitle.setBounds(0, 10, 350, 30);
+        add(roomTitle);
 
         // 스크롤 패널
         scrollPane = new JScrollPane(messagePanel);
-        scrollPane.setBounds(10, 10, 300, 380);
+        scrollPane.setBounds(0, 50, 350, 370);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane);
 
         // 입력 필드
         txtInput = new JTextField();
-        txtInput.setBounds(10, 400, 230, 40);
+        txtInput.setBounds(0, 420, 290, 40);
         add(txtInput);
 
         // 전송 버튼
         btnSend = new JButton("보내기");
-        btnSend.setBounds(250, 400, 60, 40);
+        btnSend.setBounds(290, 420, 60, 40);
         add(btnSend);
 
 
@@ -145,6 +150,21 @@ public class ChatGraphicScreen extends JPanel {
     }
 
     private void addMessageBubble(ChatRoomMessage message) {
+        // 사용자 이름 가져오기
+        String userName = UserDB.getUserById(message.getUserId()).getUserName();
+        JLabel userNameLabel = new JLabel(userName);
+        userNameLabel.setFont(new Font("Arial", Font.BOLD, 12)); // 사용자 이름 스타일 지정
+
+        // 사용자 이름 위치에 따라 정렬 설정
+        if (message.getUserId().equals(user.getId())) {
+            userNameLabel.setHorizontalAlignment(SwingConstants.RIGHT); // 상대 메시지: 왼쪽 정렬
+        } else {
+            userNameLabel.setHorizontalAlignment(SwingConstants.LEFT); // 상대 메시지: 왼쪽 정렬
+        }
+
+        userNameLabel.setBorder(new EmptyBorder(0, 0, 5, 0)); // 사용자 이름과 메시지 사이 여백 설정
+
+        // 메시지 버블 생성
         JPanel bubble = new JPanel();
         bubble.setLayout(new BoxLayout(bubble, BoxLayout.X_AXIS));
         bubble.setBorder(new EmptyBorder(5, 10, 5, 10));
@@ -153,14 +173,13 @@ public class ChatGraphicScreen extends JPanel {
         ImageIcon originalIcon = new ImageIcon(getClass().getResource("/static/images/translate.png"));
         Image scaledImage = originalIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
-
         JButton translateButton = new JButton(scaledIcon);
         translateButton.setPreferredSize(new Dimension(20, 20));
         translateButton.setBorder(BorderFactory.createEmptyBorder());
         translateButton.setContentAreaFilled(false);
 
         // 텍스트 줄바꿈 기준
-        int textWrapWidth = 150; // 텍스트 줄바꿈 기준을 더 작게 설정
+        int textWrapWidth = 150; // 텍스트 줄바꿈 기준
         int maxWidth = 220;      // 메시지 박스의 최대 너비
         final JLabel messageLabel = new JLabel("<html><p style=\"width: " + textWrapWidth + "px;\">" + message.getContent() + "</p></html>");
         messageLabel.setOpaque(true);
@@ -172,16 +191,20 @@ public class ChatGraphicScreen extends JPanel {
         int textWidth = metrics.stringWidth(message.getContent());
         int lineHeight = metrics.getHeight();
         int lineCount = (int) Math.ceil((double) textWidth / textWrapWidth); // 텍스트가 몇 줄인지 계산
-        int bubbleHeight = lineHeight * lineCount + 10; // 줄 수에 따라 높이 조정
+
+        int bubbleHeight = lineHeight * lineCount + 12; // 줄 수에 따라 높이 조정
 
         // 메시지 박스 크기 계산 (비율 고정)
         double ratio = 0.7; // 텍스트 길이에 따른 메시지 박스 크기의 비율
         int bubbleWidth = Math.min(maxWidth, (int) (textWidth * ratio) + 50); // 비율로 크기 조정
         bubbleWidth = Math.max(20, bubbleWidth); // 최소 크기 100 유지
 
+        System.out.println("bubbleWidth 길이: "+bubbleWidth);
+        System.out.println("bubbleHeight 길이: "+bubbleHeight);
+
         // 메시지 레이블 크기 설정
         messageLabel.setPreferredSize(new Dimension(bubbleWidth, bubbleHeight));
-        messageLabel.setMaximumSize(new Dimension(maxWidth, Integer.MAX_VALUE));
+        messageLabel.setMaximumSize(new Dimension(bubbleWidth, bubbleHeight));
 
         // 번역 아이콘 버튼 액션
         translateButton.addActionListener(e -> {
@@ -215,11 +238,16 @@ public class ChatGraphicScreen extends JPanel {
             bubble.add(Box.createHorizontalGlue()); // 왼쪽 기준으로 정렬
         }
 
-        bubble.setAlignmentX(Component.LEFT_ALIGNMENT);
-        messagePanel.add(bubble);
-        messagePanel.add(Box.createVerticalStrut(10));
+        // 사용자 이름과 메시지 버블을 감싸는 패널 생성
+        JPanel container = new JPanel();
+        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        container.add(userNameLabel); // 사용자 이름 추가
+        container.add(bubble);        // 메시지 버블 추가
 
-        // 레이아웃 갱신
+        // 메시지 패널에 추가
+        messagePanel.add(container);
+        messagePanel.add(Box.createVerticalStrut(5)); // 메시지 간 간격 추가
+
         revalidate();
         repaint();
 
@@ -229,6 +257,7 @@ public class ChatGraphicScreen extends JPanel {
             vertical.setValue(vertical.getMaximum());
         });
     }
+
     // 번역 API 호출 메서드 (예시)
     private String callTranslateAPI(String text, String language) throws IOException {
         // 번역 API를 호출하는 로직 구현 (HTTP 요청 등)
@@ -264,7 +293,6 @@ public class ChatGraphicScreen extends JPanel {
                         break;
                     }
                     // ChatRoomMessage 생성
-                    // TODO 한국어인지 영어인지 분별
                     ChatRoomMessage chatRoomMessage = ChatRoomMessage.builder()
                             .content(received.message)
                             .chatRoomId(received.chatRoomId)
@@ -272,6 +300,7 @@ public class ChatGraphicScreen extends JPanel {
                             .sendAt(LocalDateTime.now())
                             .build()
                             ;
+                    chatRoomMessage.determineLanguage();
 
                     System.out.println("chatRoomIncrement"+ ChatMessageDB.autoIncrement);
                     ChatMessageDB.insert(chatRoomMessage);

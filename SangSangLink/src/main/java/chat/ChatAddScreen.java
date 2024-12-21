@@ -19,18 +19,17 @@ public class ChatAddScreen extends JPanel {
 
     public ChatAddScreen() {
         setLayout(null);
-        setBounds(60, 0, 320, 500);
         setBackground(new Color(100, 175, 250));
 
         // 상단 제목 라벨
         titleLabel = new JLabel("채팅방 만들기", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        titleLabel.setBounds(10, 10, 300, 30);
+        titleLabel.setBounds(0, 10, 350, 30);
         add(titleLabel);
 
         // 채팅방 제목 입력 필드
         roomNameField = new JTextField();
-        roomNameField.setBounds(10, 50, 300, 30);
+        roomNameField.setBounds(10, 50, 330, 30);
         add(roomNameField);
 
         // 초대할 친구 리스트
@@ -44,12 +43,12 @@ public class ChatAddScreen extends JPanel {
 
         friendList = new JList<>(friendsNames.toArray(new String[0]));
         friendScrollPane = new JScrollPane(friendList);
-        friendScrollPane.setBounds(10, 90, 300, 300);
+        friendScrollPane.setBounds(10, 90, 330, 300);
         add(friendScrollPane);
 
         // 채팅방 생성 버튼 (아직 로직은 없음)
         createButton = new JButton("생성");
-        createButton.setBounds(10, 400, 300, 40);
+        createButton.setBounds(10, 400, 330, 40);
         // 추후 addActionListener를 추가하여 생성 로직 연동 가능
         add(createButton);
 

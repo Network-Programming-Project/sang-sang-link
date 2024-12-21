@@ -31,6 +31,30 @@ public class ChatRoomDB {
         user1.addChatRoom(chatRoom);
         user2.addChatRoom(chatRoom);
 
+        ChatRoom chatRoom2 = ChatRoom.builder()
+                .title("샘플 데이터1")
+                .users(List.of(user1, user2))
+                .messages(new ArrayList<>())
+                .build()
+                ;
+
+        insert(chatRoom2);
+
+        ChatRoom chatRoom3 = ChatRoom.builder()
+                .title("샘플 데이터1")
+                .users(List.of(user1, user2))
+                .messages(new ArrayList<>())
+                .build()
+                ;
+
+        insert(chatRoom3);
+
+        user1.addChatRoom(chatRoom);
+        user2.addChatRoom(chatRoom);
+
+        user1.addChatRoom(chatRoom);
+        user2.addChatRoom(chatRoom);
+
         System.out.println(chatRoom+"기본 채팅방 데이터 ChatRoomDB에 저장");
     }
 
